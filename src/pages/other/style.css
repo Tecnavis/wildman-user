@@ -1,0 +1,90 @@
+.checkout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .checkout-section {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .checkout-section h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .order-details, .payment-section {
+    margin-bottom: 20px;
+  }
+  
+  .order-item, .payment-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  
+  .item-label, .payment-field label {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .item-input, .payment-field input {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+  }
+  
+  .payment-field input::placeholder {
+    color: #bbb;
+  }
+  
+  .confirm-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #218838;
+  }
+  /* .payment-method-container {
+  width: 100%;
+} */
+
+/* .payment-buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.item-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  background-color: #f1f1f1; /* Default color */
+  /* border: 1px solid #ccc;
+  border-radius: 4px;
+} */ */
+
+.selected-cod {
+  background-color: green;
+  color: #fff;
+}
+
+.selected-razorpay {
+  background-color: green;
+  color: #fff;
+}

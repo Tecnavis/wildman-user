@@ -1,0 +1,15 @@
+.product-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Four columns */
+    gap: 20px; /* Spacing between items */
+    margin: 20px;
+  }
+  
+  .product-wrap {
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+  }
+  

@@ -1,0 +1,27 @@
+.recently-viewed-section .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 20px; /* Space between items */
+  }
+  
+  .blog-wrap {
+    /* Optional: Customize styling for the individual product cards */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .recently-viewed-section .product-grid {
+      grid-template-columns: repeat(2, 1fr); /* Two columns on tablet */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .recently-viewed-section .product-grid {
+      grid-template-columns: 1fr; /* One column on mobile */
+    }
+  }
+  
+  
