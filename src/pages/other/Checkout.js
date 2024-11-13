@@ -7,7 +7,7 @@ import { useForm } from "../../helpers/useForm";
 import Swal from "sweetalert2";
 import { URL } from "../../helpers/handle_api";
 import axios from "axios";
-import "./style.css";
+import "./style.scss";
 
 const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");

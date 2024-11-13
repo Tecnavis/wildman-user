@@ -10,7 +10,7 @@ import {
   fetchCustomerCart,
   createCustomerCart,
 } from "../../helpers/handle_api";
-import "./style.css";
+import "./style.scss";
 import Swal from "sweetalert2";
 
 const ProductGridSingle = () => {

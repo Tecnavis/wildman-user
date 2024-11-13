@@ -10,9 +10,9 @@ import {
   createCustomerCart,
   fetchCustomerCart,
 } from "../../helpers/handle_api";
-import "./style.css";
+import "./style.scss";
 import Swal from "sweetalert2";
-import "./styles.css";
+import "./styles.scss";
 
 const ProductGridSingle = () => {
   const [modalShow, setModalShow] = useState(false);
