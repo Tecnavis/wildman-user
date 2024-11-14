@@ -181,7 +181,7 @@ const handleSizeSelect = (productId, size) => {
                           {customerCart.map((item) => (
                             <tr key={item._id}>
                               <td className="product-thumbnail">
-                                <Link to={`/product/${item._id}`}>
+                                <Link to="">
                                   <img
                                     className="img-fluid"
                                     src={`${URL}/images/${item.coverimage || item.productId.coverimage}`}
@@ -190,7 +190,7 @@ const handleSizeSelect = (productId, size) => {
                                 </Link>
                               </td>
                               <td className="product-name">
-                                <Link to={`/product/${item._id}`}>
+                                <Link to="">
                                   {item.mainCategory || item.productId.mainCategory}
                                 </Link>
                                 <p>{item.color || item.productId.color}</p>

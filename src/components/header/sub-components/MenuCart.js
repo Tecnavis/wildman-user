@@ -50,7 +50,7 @@ const handleDeleteCustomer = (productId) => {
           {customerCart.map((item) => (
                 <li className="single-shopping-cart" key={item._id || item.productId._id} >
                   <div className="shopping-cart-img">
-                    <Link to="/product/1">
+                    <Link to="">
                       <img
                         alt=""
                         src={`${URL}/images/${item.coverimage ||item.productId.coverimage }`}
@@ -61,7 +61,7 @@ const handleDeleteCustomer = (productId) => {
                   <div className="shopping-cart-title">
                     <h4>
                       <Link
-                        to="/product/1"
+                        to=""
                       >
                         {item.mainCategory || item.productId.mainCategory}
                       </Link>
