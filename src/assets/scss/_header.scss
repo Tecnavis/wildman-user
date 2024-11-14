@@ -286,7 +286,7 @@
 
                   color: #333;
                   &:hover {
-                    color: $theme-color;
+                    color: red;
                   }
                   &::before {
                     position: absolute;
@@ -373,7 +373,7 @@
           }
         }
         &:hover a {
-          color: $theme-color;
+          color: red;
         }
       }
     }
@@ -406,7 +406,7 @@
 .stick .main-menu.menu-white nav ul li a {
   color: #555252;
   &:hover {
-    color: $theme-color;
+    color: red;
   }
 }
 
@@ -485,7 +485,7 @@
     }
     &:hover > a,
     &:hover > button {
-      color: $theme-color;
+      color: red;
     }
     .account-dropdown {
       position: absolute;
@@ -545,7 +545,7 @@
             &:hover {
               padding-left: 5px;
 
-              color: $theme-color;
+              color: red;
             }
           }
         }
@@ -613,7 +613,7 @@
       }
     }
     &:hover > button {
-      color: $theme-color;
+      color: green;
     }
     .shopping-cart-content {
       position: absolute;
@@ -699,7 +699,7 @@
 
                 color: #000;
                 &:hover {
-                  color: $theme-color;
+                  color: green;
                 }
               }
             }
@@ -895,7 +895,7 @@
           color: #ffffff;
           border: none;
           border-color: #ce9634;
-          background: $theme-color;
+          background: black;
           &:hover {
             background-color: #000;
           }

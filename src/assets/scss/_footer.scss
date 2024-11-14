@@ -62,7 +62,7 @@
 
           color: #5d5d5d;
           &:hover {
-            color: $theme-color;
+            color: gray;
           }
         }
       }
@@ -106,7 +106,7 @@
           background: none;
           &:hover {
             color: $theme-color;
-            border-bottom: 2px solid $theme-color;
+            border-bottom: 2px solid black;
           }
         }
       }

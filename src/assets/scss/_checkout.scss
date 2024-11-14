@@ -223,7 +223,7 @@
 
             list-style: outside none none;
 
-            color: $theme-color;
+            color: green;
           }
         }
       }
@@ -282,7 +282,7 @@
     border: none;
     border-radius: 50px;
     background: none;
-    background-color: $theme-color;
+    background-color: black;
     &:hover {
       background-color: #333;
     }

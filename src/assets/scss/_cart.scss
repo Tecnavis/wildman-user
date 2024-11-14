@@ -234,7 +234,7 @@ h3.cart-page-title {
     }
     &:hover {
       color: #fff;
-      background-color: $theme-color;
+      background-color: black;
     }
   }
   .cart-clear > button {
@@ -354,7 +354,7 @@ h3.cart-page-title {
         color: #fff;
         border: medium none;
         border-radius: 50px;
-        background-color: $theme-color;
+        background-color: black;
         &:hover {
           background-color: #333;
         }
@@ -388,7 +388,7 @@ h3.cart-page-title {
         color: #fff;
         border: medium none;
         border-radius: 50px;
-        background-color: $theme-color;
+        background-color: black;
         &:hover {
           background-color: #333;
         }
@@ -502,7 +502,7 @@ h3.cart-page-title {
 
     margin: 0 0 25px;
 
-    color: $theme-color;
+    color: green;
     span {
       float: right;
     }

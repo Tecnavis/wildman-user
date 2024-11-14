@@ -1611,7 +1611,9 @@ textarea:focus {
   border: none;
   border-radius: 50px;
   background: none;
-  background-color: $theme-color;
+  background-color: #000000;
+ 
+  
   // &.show {
   //   visibility: visible;
 
@@ -1719,7 +1721,7 @@ textarea:focus {
     transition: all 0.5s ease-in-out 0s;
     &:hover {
       color: #fff;
-      border: 1px solid $theme-color;
+      border: 1px solid black;
     }
     &::before,
     &::after {
@@ -1740,7 +1742,7 @@ textarea:focus {
 
       width: 0;
 
-      background: $theme-color;
+      background: black;
     }
     &:hover::after {
       right: auto;
@@ -1754,10 +1756,10 @@ textarea:focus {
     a,
     button {
       &:hover {
-        border-color: #053399 !important;
+        border-color: #000 !important;
       }
       &::after {
-        background: #053399;
+        background: #000;
       }
     }
   }
@@ -1898,7 +1900,7 @@ a.default-btn {
       background-color: #363f4d;
       &:hover {
         color: $white;
-        background-color: $theme-color;
+        background-color:black;
       }
     }
   }

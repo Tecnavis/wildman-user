@@ -239,14 +239,14 @@
 
         text-align: center;
 
-        color: $theme-color;
+        color: black;
         border: none;
         border-radius: 100% !important;
         background: none;
         box-shadow: 0 0 12px 0.8px rgba(0, 0, 0, 0.1);
         &:hover {
           color: #fff;
-          background-color: $theme-color;
+          background-color: black;
         }
       }
       a.active {
@@ -274,8 +274,8 @@
         &.active {
           .page-link {
             --bs-pagination-active-color: #ffffff;
-            border-color: $theme-color;
-            background-color: $theme-color;
+            border-color: black;
+            background-color: black;
             box-shadow: 0 0 12px 0.8px rgba(0, 0, 0, 0.1) !important;
             &:focus {
               box-shadow: none;

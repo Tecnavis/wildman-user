@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 const Wishlist = () => {
   let { pathname } = useLocation();
   const [wishlistItems, setWishlistItems] = useState([]);
+  const navigate = useNavigate();
 // Fetch wishlist
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -51,31 +52,16 @@ const handleAddToCart = async (product) => {
   const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
 
   if (!customerDetails) {
-    let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-    // Check if the product is already in the guest wishlist
-    const isProductInGuestWishlist = guestCart.some(
-      (item) => item._id === product._id
-    );
-
-    if (isProductInGuestWishlist) {
-      Swal.fire({
-        icon: "info",
-        title: "Already in Cart",
-        text: "This product is already in your cart.",
-      });
-      return;
-    }
-
-    // Add product to guest wishlist
-    guestCart.push(product);
-    localStorage.setItem("guestCart", JSON.stringify(guestCart));
-
     Swal.fire({
-      icon: "success",
-      title: "Added to Cart",
-      text: "The product has been added to your cart.",
+      icon: "warning",
+      title: "Login Required",
+      text: "Please log in to proceed to checkout.",
+      confirmButtonText: "Login",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/login-register"); 
+      }
     });
-    return;
   }
 
   try {

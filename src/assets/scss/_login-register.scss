@@ -94,7 +94,7 @@
               }
               transition: all 0.3s ease 0s;
               &:hover {
-                color: $theme-color;
+                color: gray;
               }
             }
           }
@@ -110,7 +110,7 @@
             text-transform: uppercase;
             transition: all 0.3s ease 0s;
             &:hover {
-              background-color: $theme-color;
+              background-color: gray;
               color: #fff;
             }
           }

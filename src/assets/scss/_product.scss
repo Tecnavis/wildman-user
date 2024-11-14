@@ -270,10 +270,11 @@
         color: #fff;
         border-radius: 3px;
         &.pink {
-          background-color: #fa6bff;
+          // background-color: #fa6bff;
+          background-color:  red;
         }
         &.purple {
-          background-color: $theme-color;
+          background-color: green;
         }
 
         &:last-child {
@@ -319,7 +320,7 @@
         transform: translateY(20px);
 
         opacity: 0;
-        background-color: $theme-color;
+        background-color: #24222269;
         // &:hover {
         //     background-color: #000;
         // }
@@ -1963,7 +1964,7 @@
           border: none;
           border-radius: 50px;
           background: none;
-          background-color: #a749ff;
+          background-color: #49ff58;
           &:hover,
           &.active {
             background-color: #fa6bff;

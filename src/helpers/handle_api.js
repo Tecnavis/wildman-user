@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 
 
 export const  URL = `http://localhost:3000`;
+// export const  URL = `https://api.wildman.tecnavis.com`;
+
 export const fetchProductDetails = async (productId) => {
     try {
       const response = await fetch(`${URL}/product/${productId}`);

@@ -5,6 +5,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { fetchCustomerCart, URL, deleteCustomerCart } from "../../helpers/handle_api";
 import Swal from "sweetalert2";
+import "./style.scss";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -296,7 +297,7 @@ const handleSizeSelect = (productId, size) => {
                       <h4 className="grand-totall-title">
                         Grand Total <span>${checkoutDetails.totalAmount -5||0}.00</span>
                       </h4>
-                      <button className="cart-btn-2" onClick={handleProceedToCheckout}>
+                      <button className="checkoutbtn" onClick={handleProceedToCheckout}>
                          Proceed to Checkout
                       </button>
                     </div>

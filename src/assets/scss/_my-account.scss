@@ -36,7 +36,7 @@
       }
   
       &:hover {
-        color: $theme-color;
+        color: gray;
       }
       &::before {
         color: #000;
@@ -49,7 +49,7 @@
         top: 19px;
       }
       &:hover::before {
-        color: $theme-color;
+        color: gray;
       }
     }
     &-body {
