@@ -64,8 +64,8 @@ const LanguageCurrencyChanger = ({ currency }) => {
         <span>
         {`${filterMainadmin?.email}`}
         </span>
-        <div className="lang-car-dropdown">
-        <ul>
+        <div className="">
+        {/* <ul>
             <li>
               <button value="en" onClick={e => changeLanguageTrigger(e)}>
                 English
@@ -81,7 +81,7 @@ const LanguageCurrencyChanger = ({ currency }) => {
                 Germany
               </button>
             </li>
-          </ul>
+          </ul> */}
         </div>
       </div>
       <div className="same-language-currency">

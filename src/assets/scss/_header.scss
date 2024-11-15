@@ -1095,7 +1095,7 @@
             border: none;
             background: none;
             &:hover {
-              color: $theme-color;
+              color: gray;
             }
           }
         }
@@ -1113,7 +1113,7 @@
     &:hover {
       & > a,
       span {
-        color: $theme-color;
+        color: gray;
       }
 
       .lang-car-dropdown {
