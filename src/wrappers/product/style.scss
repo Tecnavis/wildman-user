@@ -7,9 +7,20 @@
   
   .product-wrap {
     background-color: #fff;
-    border: 1px solid #eaeaea;
+    // border: 1px solid #eaeaea;
     border-radius: 8px;
     overflow: hidden;
     text-align: center;
+  }
+  .des{
+    font-family: var(--heading-font-family);
+    font-weight: 300;
+    font-style: var(--heading-font-style);
+    letter-spacing: var(--heading-letter-spacing);
+    text-transform: var(--heading-text-transform);
+    overflow-wrap: anywhere;
+    color: gray;
+    font-size: var(--text-h5);
+    line-height:2;
   }
   

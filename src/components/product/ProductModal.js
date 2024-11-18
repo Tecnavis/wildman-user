@@ -5,6 +5,7 @@ import Rating from "./sub-components/ProductRating";
 import Swiper, { SwiperSlide } from "../../components/swiper";
 import { createCustomerCart, createWishlist, fetchCustomerCart, fetchWishlist, URL } from "../../helpers/handle_api";
 import Swal from "sweetalert2";
+import "./style.scss";
 
 function ProductModal({ product, show, onHide }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -210,15 +211,18 @@ const handleAddToCart = async (product) => {
           </div>
           <div className="col-md-7 col-sm-12 col-xs-12">
             <div className="product-details-content quickview-content">
-              <h2>{product.mainCategory}</h2>
-              <div className="product-details-price">
-                <span>${product.price}</span>
+              <h5 className="des">{product.title}</h5>
+              <h4 className="desc">{product.description}</h4>
+              <div className="product-details-price" style={{display:"flex"}}>
+                <span>RS. {product.price}</span> 
+                {/* old price */}
               </div>
               <div className="pro-details-rating-wrap">
-                <Rating ratingValue={"2"} />
+                <h5 className="return">RETURN POLICY IS AVAILABLE</h5>
               </div>
               <div className="pro-details-list">
-                <p>{product.description}</p>
+                <p>{product.mainCategory}</p>
+                <p>{product.subCategory}</p>
               </div>
               <div className="pro-details-color-wrap">
                 <div className="pro-details-color-content">
@@ -226,7 +230,7 @@ const handleAddToCart = async (product) => {
                     className={`pro-details-color-content--single ${product.color}`}
                   >
                     {/* <input type="radio" value={product.color} name="product-color" /> */}
-                    <span className="checkmark">Color: {product.color}</span>
+                    <span className="color">Color: {product.color}</span>
                   </label>
                 </div>
               </div>
@@ -235,8 +239,8 @@ const handleAddToCart = async (product) => {
                 {product.sizes.map((size, index) => (
                   <div className="pro-details-size">
                     <div className="pro-details-size-content" key={index}>
-                      <label className={`pro-details-size-content--single`}>
-                        <input type="radio" value={"M"} checked />
+                      <label className={`pro-details-size-content--single`} style={{backgroundColor:"black"}}>
+                        {/* <input type="radio" value={"M"} checked /> */}
                         <span className="size-name">{size.size}</span>
                       </label>
                     </div>

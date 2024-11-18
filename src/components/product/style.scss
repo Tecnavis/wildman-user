@@ -1,0 +1,37 @@
+.des{
+    font-family: var(--heading-font-family);
+    font-weight: 300;
+    font-style: var(--heading-font-style);
+    letter-spacing: var(--heading-letter-spacing);
+    text-transform: var(--heading-text-transform);
+    overflow-wrap: anywhere;
+    color: gray;
+    font-size: var(--text-h5);
+    line-height:2;
+  }
+  
+.desc{
+    font-family: var(--heading-font-family);
+    font-weight: 350;
+    font-style: var(--heading-font-style);
+    letter-spacing: var(--heading-letter-spacing);
+    text-transform: var(--heading-text-transform);
+    overflow-wrap: anywhere;
+    /* color: gray; */
+    /* font-size: var(--text-h4); */
+    line-height: 2;
+    text-transform: uppercase;
+  }
+  .return{
+    color: #E32C2B;
+    display: block;
+  }
+  .color{
+    --modal-header-padding-block: 1.125rem;
+        --modal-header-padding-inline: 2rem;
+        --modal-body-padding-block: 2rem;
+        --modal-body-padding-inline: 2rem;
+        --modal-body-max-width: 55.625rem;
+        font: var(--text-font-style) var(--text-font-weight) var(--text-base) / 1.65 var(--text-font-family);
+    letter-spacing: var(--text-letter-spacing);
+    }

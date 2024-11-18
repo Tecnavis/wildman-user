@@ -145,11 +145,7 @@ const handleQuickView = (product) => {
                       />
                       <img
                         className="hover-img"
-                        src={`${URL}/images/${
-                          item.images && item.images[0]
-                            ? item.images[0]
-                            : "default-image.jpg"
-                        }`}
+                        src={`${URL}/images/${item.coverimage}`}
                         alt=""
                       />
                     </Link>
@@ -176,18 +172,26 @@ const handleQuickView = (product) => {
                     </div>
                   </div>
                   <div className="product-content text-center">
-                    <h3>
-                      <Link to={`/productview/${item._id}`}>{item.subCategory}</Link>
-                    </h3>
-                    <p>{item.mainCategory}</p>
-                    <div className="product-rating">
-                      <Rating ratingValue={4} />
-                    </div>
-                    <div className="product-price">
+                  <a className="des">{item.description}</a>
+
+                  <div className="product-price">
                       <Fragment>
                         <span>${item.price}</span>{" "}
                         <span className="old">$1900</span>
                       </Fragment>
+                    </div>
+                    <h5 className="des"> 
+                <Link to={`/productview/${item._id}`}>{item.title}</Link>
+              </h5>
+              <div className="pro-details-rating-wrap">
+                <h5 className="return">{item.subCategory}</h5>
+              </div>
+                    {/* <h3>
+                      <Link to={`/productview/${item._id}`}>{item.subCategory}</Link>
+                    </h3>
+                    <p>{item.mainCategory}</p> */}
+                    <div className="product-rating">
+                      <Rating ratingValue={4} />
                     </div>
                   </div>
                 </div>

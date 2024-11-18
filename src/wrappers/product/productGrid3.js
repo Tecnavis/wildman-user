@@ -203,7 +203,7 @@ const ProductGridSingle = () => {
                 />
                 <img
                   className="hover-img"
-                  src={`${URL}/images/${data.images[0]}`}
+                  src={`${URL}/images/${data.coverimage}`}
                   alt=""
                 />
               </Link>
@@ -241,14 +241,16 @@ const ProductGridSingle = () => {
               </div>
             </div>
             <div className="product-content text-center">
-              <h3>
-                <Link to={`/productview/${data._id}`}>{data.mainCategory}</Link>
-              </h3>
+              <a className="des">{data.description}</a>
+              <div className="product-price">
+                <span>$1000.00</span>
+              </div>
+              <h5 className="des"> 
+                <Link to={`/productview/${data._id}`}>{data.title}</Link>
+              </h5>
+              
               <div className="product-rating">
                 <Rating ratingValue={4} />
-              </div>
-              <div className="product-price">
-                <span>$1000 </span>
               </div>
             </div>
           </div>
