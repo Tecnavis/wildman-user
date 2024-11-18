@@ -1,0 +1,52 @@
+.single-slider {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slider-container {
+    position: relative;
+  }
+  
+  .slider-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .image-container {
+    flex: 1;
+    position: relative;
+  }
+  
+  .content-container {
+    position: absolute;
+    top: 50%;
+    left: 3%;
+    right: 10%; /* Adjust as needed to position it on the left */
+    transform: translateY(-50%);
+    color: white; /* Set text color to ensure visibility over the image */
+    z-index: 1;
+  }
+
+
+  
+
+  
+  .slider-btn {
+    margin-top: 20px;
+  }
+  
+  .animated {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  

@@ -7,7 +7,7 @@ const ShopCategories = ({ getSortParams }) => {
   useEffect(() => {
     fetchCategories().then((res) => {
       setCategory(res);
-      console.log(res, "jjj");
+      // console.log(res, "jjj");
     });
   }, []);
 
