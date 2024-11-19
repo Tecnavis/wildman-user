@@ -47,7 +47,9 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
               <div className="col-lg-6 col-md-6">
                 <div className="product-large-image-wrapper">
                   <div className="product-img-badges">
-                  {product.discount && <span className="pink">-{product.discount}%</span>}
+                    {product.discount && (
+                      <span className="pink">-{product.discount}%</span>
+                    )}
                     <span className="purple">New</span>
                   </div>
                   <Swiper>
@@ -65,7 +67,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <div className="col-12">
                       <div className="product-images-wrapper d-flex flex-wrap justify-content-start">
                         {product.images.map((img, idx) => (
-                          <div className="single-image col-4 p-2" key={idx}>
+                          <div className="single-image col-6 p-2" key={idx}>
                             <img
                               src={`${URL}/images/${img}`}
                               className="img-fluid"
@@ -80,19 +82,27 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
               </div>
               <div className="col-lg-6 col-md-6">
                 <div className="product-details-content ml-70">
-                <a className="des">{product.title}</a>
-                <h5 className="des" style={{textTransform: "uppercase"}}> 
-                <Link to="">{product.description}</Link>
-              </h5>
-                
+                  <a className="des">{product.title}</a>
+                  <h5 className="des" style={{ textTransform: "uppercase" }}>
+                    <Link to="">{product.description}</Link>
+                  </h5>
 
                   {/* <h2>{product.mainCategory}</h2> */}
                   <div className="product-price">
-                      <Fragment>
-                        <span style={{ color: "red" ,paddingRight: "10px" }}>RS.{product.price}.00</span>{" "}
-                        <span className="old">RS.1900.00</span>
-                      </Fragment>
-                    </div><br/>
+                    <Fragment>
+                      <span style={{ color: "red", paddingRight: "10px" }}>
+                        RS.
+                        {(product.price * (1 - product.discount / 100)).toFixed(
+                          2
+                        )}
+                      </span>{" "}
+                      <span className="old">
+                        MRP PRICE RS.{product.price}.00
+                      </span>
+                    </Fragment>
+                  </div>
+
+                  <br />
                   <div className="pro-details-rating-wrap">
                     <div className="pro-details-rating">
                       <ProductRating ratingValue={4} />
@@ -104,37 +114,31 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
                   <div className="pro-details-size-color">
                     <div className="pro-details-color-wrap">
-                    <a className="des"> Size :</a>
+                      <a className="des"> Size :</a>
                     </div>
                     {product.sizes.map((size) => (
-                    <div className="pro-details-size" key={size._id}>
-                      <div className="pro-details-size-content" >
-                        <label className={`pro-details-size-content--single`}>
-                          <input type="radio" value={"M"} />
-                          <span className="size-name"> {size.size}</span>
-                        </label>
+                      <div className="pro-details-size" key={size._id}>
+                        <div className="pro-details-size-content">
+                          <label className={`pro-details-size-content--single`}>
+                            <input type="radio" value={"M"} />
+                            <span className="size-name"> {size.size}</span>
+                          </label>
+                        </div>
                       </div>
-                      
-                    </div>
-                    
                     ))}
                   </div>
                   <div className="pro-details-size-color">
                     <div className="pro-details-color-wrap">
                       <a className="des">Color :</a>
                     </div>
-                    <div className="pro-details-size" >
-                      <div className="pro-details-size-content" >
-                        {/* <label className={`pro-details-size-content--single`}> */}
-                          {/* <input type="radio" value="" /> */}
-                          <a className="des"> {product.color}</a>
+                    <div className="pro-details-size">
+                      <div className="pro-details-size-content">
+                        <a className="des"> {product.color}</a>
                         {/* </label> */}
                       </div>
-                      
                     </div>
-                    
                   </div>
-                  
+
                   <div className="pro-details-quality">
                     <div className="cart-plus-minus">
                       <button className="dec qtybutton">-</button>
@@ -160,23 +164,84 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </button>
                     </div>
                   </div>
-                  <a className="" style={{color: "red"}}>Return Policy is not available </a>
+
+                  {product.returnpolicy === "Yes" && (
+                    <a className="" style={{ color: "red" }}>
+                      Return Policy is available{" "}
+                    </a>
+                  )}
 
                   <div className="pro-details-meta">
-                    <a className="des">Categories : </a>
+                    <a className="des">Main Category : </a>
                     <ul>
                       <li className="des">
-                        <Link to="/shop-grid-standard">{product.subCategory}</Link>
+                        <Link to="/shop-grid-standard">
+                          {product.mainCategory}
+                        </Link>
                       </li>
                     </ul>
                   </div>
                   <div className="pro-details-meta">
-                    <a className="des">Title : </a>
+                    <a className="des">Sub Category : </a>
                     <ul>
                       <li className="des">
-                        <Link to="/shop-grid-standard">{product.mainCategory}</Link>
+                        <Link to="/shop-grid-standard">
+                          {product.subCategory}
+                        </Link>
                       </li>
                     </ul>
+                  </div>
+
+                  <hr />
+                  <div className="col-12" style={{ lineHeight: "35px" }}>
+                    <a className="des">ABOUT THIS PRODUCT</a>
+                    <br />
+                    MRP: {product.price + product.gst}/- Includes GST and
+                    Shipping <br />
+                    Color: {product.color} <br />
+                    {product.meterial && (
+                      <span>
+                        Material: {product.meterial} <br />
+                      </span>
+                    )}
+                    {product.outermeterial && (
+                      <span>
+                        Outer material: {product.outermeterial} <br />
+                      </span>
+                    )}
+                    {product.warranty && (
+                      <span>
+                        Warranty: {product.warranty}
+                        <br />
+                      </span>
+                    )}
+                    {product.brand && (
+                      <span>
+                        Brand: {product.brand} <br />
+                      </span>
+                    )}
+                    {product.height && (
+                      <span>
+                        Height: {product.height} <br />
+                      </span>
+                    )}
+                    {product.weight && (
+                      <span>
+                        Weight: {product.weight} <br />
+                      </span>
+                    )}
+                    {product.date && (
+                      <span>
+                        Date of Manufacture:{" "}
+                        {new Date(product.date).toLocaleDateString("en-GB")}{" "}
+                        <br />
+                      </span>
+                    )}
+                    {product.compartment && (
+                      <span>
+                        Compartment: {product.compartment} <br />
+                      </span>
+                    )}
                   </div>
 
                   <div className="pro-details-social">
