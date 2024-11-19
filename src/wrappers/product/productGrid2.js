@@ -260,7 +260,8 @@ const ProductGridSingle = () => {
               </Link>
 
               <div className="product-img-badges">
-                <span className="pink">-10%</span>
+              {data.discount && <span className="pink">-{data.discount}%</span>}
+
               </div>
               <div className="product-action">
                 <div className="pro-same-action pro-wishlist">

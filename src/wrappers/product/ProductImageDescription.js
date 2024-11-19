@@ -47,7 +47,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
               <div className="col-lg-6 col-md-6">
                 <div className="product-large-image-wrapper">
                   <div className="product-img-badges">
-                    <span className="pink">-5%</span>
+                  {product.discount && <span className="pink">-{product.discount}%</span>}
                     <span className="purple">New</span>
                   </div>
                   <Swiper>

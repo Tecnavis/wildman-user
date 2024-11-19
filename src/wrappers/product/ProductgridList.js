@@ -97,7 +97,8 @@ const ProductGridList = () => {
                   />
                 </Link>
                 <div className="product-img-badges">
-                  <span className="pink">-12%</span>
+                {item.discount && <span className="pink">-{item.discount}%</span>}
+
                   {/* Show "New" badge on the 5 most recent products */}
                   {index < 5 && <span className="purple">New</span>}
                 </div>

@@ -150,7 +150,8 @@ const handleQuickView = (product) => {
                       />
                     </Link>
                     <div className="product-img-badges">
-                      <span className="pink">-12%</span>
+                    {item.discount && <span className="pink">-{item.discount}%</span>}
+
                       {index < 5 && <span className="purple">New</span>}
                     </div>
                     <div className="product-action">
