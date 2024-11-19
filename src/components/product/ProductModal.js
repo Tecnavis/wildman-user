@@ -239,7 +239,7 @@ const handleAddToCart = async (product) => {
                 {product.sizes.map((size, index) => (
                   <div className="pro-details-size">
                     <div className="pro-details-size-content" key={index}>
-                      <label className={`pro-details-size-content--single`} style={{backgroundColor:"black"}}>
+                      <label className={`pro-details-size-content--single`} style={{backgroundColor:"black",color:"white"}}>
                         {/* <input type="radio" value={"M"} checked /> */}
                         <span className="size-name">{size.size}</span>
                       </label>

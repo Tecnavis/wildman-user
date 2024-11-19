@@ -190,15 +190,16 @@ const handleQuickView = (product) => {
                       <Link to={`/productview/${item._id}`}>{item.subCategory}</Link>
                     </h3>
                     <p>{item.mainCategory}</p> */}
-                    <div className="product-rating">
+                    {/* <div className="product-rating">
                       <Rating ratingValue={4} />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </Fragment>
               <br />
             </div>
           ))}
+          <br/>
   <ProductModal
         show={modalShow}
         onHide={() => setModalShow(false)}

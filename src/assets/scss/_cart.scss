@@ -56,7 +56,7 @@ h3.cart-page-title {
 
           color: #333;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
         }
       }
@@ -154,7 +154,7 @@ h3.cart-page-title {
           border: none;
           background: none;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
         }
       }
@@ -175,7 +175,7 @@ h3.cart-page-title {
         border: none;
         border-radius: 50px;
         background: none;
-        background-color: $theme-color;
+        background-color: black;
         &:hover,
         &.active {
           background-color: #333;
@@ -521,7 +521,7 @@ h3.cart-page-title {
 
     color: #fff;
     border-radius: 50px;
-    background-color: $theme-color;
+    background-color: black;
     &:hover {
       background-color: #333;
     }

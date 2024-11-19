@@ -105,11 +105,11 @@
           font-weight: 500;
           text-transform: uppercase;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
           i {
             font-size: 16px;
-            color: $theme-color;
+            color: black;
           }
         }
       }
@@ -127,7 +127,7 @@
           cursor: pointer;
           transition: all 0.3s ease 0s;
           &:hover {
-            background: $theme-color;
+            background: black;
             color: #fff;
           }
         }
@@ -177,12 +177,12 @@
           text-transform: uppercase;
           font-weight: 500;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
           &.edit {
             background-color: #df5c39;
             &:hover {
-              background-color: $theme-color;
+              background-color: black;
             }
           }
         }

@@ -87,7 +87,7 @@
         a {
           color: #666;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
         }
       }
@@ -144,7 +144,7 @@
         border-radius: 50px;
         background-color: #ff0000;
         &:hover {
-          background-color: $theme-color;
+          background-color: black;
         }
       }
     }
@@ -198,7 +198,7 @@
           a {
             color: #555;
             &:hover {
-              color: $theme-color;
+              color: black;
             }
           }
         }
@@ -225,7 +225,7 @@
       a {
         color: #333;
         &:hover {
-          color: $theme-color;
+          color: black;
         }
       }
     }
@@ -256,7 +256,7 @@
 
           color: #333;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
         }
       }
@@ -366,7 +366,7 @@
 
       opacity: 0;
       color: #fff;
-      background-color: $theme-color;
+      background-color: black;
       @media #{$md-layout} {
         font-size: 30px;
       }

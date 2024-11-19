@@ -58,7 +58,7 @@
         a {
           color: #404040;
           &:hover {
-            color: $theme-color;
+            color: black;
           }
         }
         &:last-child {
@@ -94,7 +94,7 @@
 
         color: #4d4d4d;
         &:hover {
-          color: $theme-color;
+          color: black;
         }
       }
     }
@@ -155,7 +155,7 @@
       border: none;
       background-color: #404040;
       &:hover {
-        background-color: $theme-color;
+        background-color: black;
       }
     }
   }

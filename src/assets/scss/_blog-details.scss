@@ -27,7 +27,7 @@
         border-radius: 50px;
         background-color: #ff0000;
         &:hover {
-          background-color: $theme-color;
+          background-color: black;
         }
       }
     }
@@ -72,7 +72,7 @@
           a {
             color: #333;
             &:hover {
-              color: $theme-color;
+              color: black;
             }
           }
         }
@@ -343,7 +343,7 @@
 
         color: #fff;
         border: medium none;
-        background-color: $theme-color;
+        background-color: black;
         &:hover {
           background-color: #333;
         }

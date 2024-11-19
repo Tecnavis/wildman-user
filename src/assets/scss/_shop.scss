@@ -93,7 +93,7 @@
       a {
         color: #010101;
         &:hover {
-          color: $theme-color;
+          color: black;
         }
       }
     }
@@ -202,7 +202,7 @@
           padding: 10px 20px 11px;
         }
         &:hover {
-          border: 1px solid $theme-color;
+          border: 1px solid black;
         }
       }
     }
@@ -251,7 +251,7 @@
       }
       a.active {
         color: #fff;
-        background-color: $theme-color;
+        background-color: black;
         box-shadow: none;
         &:hover {
           background-color: #333;
@@ -261,12 +261,12 @@
       a.next {
         font-size: 17px;
 
-        color: $theme-color;
+        color: black;
         background-color: #f6f6f6;
         box-shadow: none;
         &:hover {
           color: #fff;
-          background-color: $theme-color;
+          background-color: black;
         }
       }
 
@@ -418,7 +418,7 @@
     background: none;
     &:hover,
     &.active {
-      color: $theme-color;
+      color: black;
     }
   }
 }

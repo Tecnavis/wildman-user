@@ -67,7 +67,7 @@
   }
   h2 {
     & > span {
-      color: $theme-color;
+      color: black;
       font-size: 40px;
       font-weight: bold;
       margin: 25px 0 12px;
@@ -143,7 +143,7 @@
           background-color: #c32aa3;
           &:hover {
             background-color: transparent;
-            color: #c32aa3;
+            color: #070508;
           }
         }
       }

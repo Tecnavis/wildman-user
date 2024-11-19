@@ -23,4 +23,15 @@
     font-size: var(--text-h5);
     line-height:2;
   }
-  
+  .old{
+    text-decoration: line-through;
+    color: gray;
+    font-family: var(--heading-font-family);
+    font-weight: var(--heading-font-weight);
+    font-style: var(--heading-font-style);
+    letter-spacing: var(--heading-letter-spacing);
+    text-transform: var(--heading-text-transform);
+    font-weight: bold;
+    font-size: var(--text-h4);
+    line-height: 1.6;
+  }

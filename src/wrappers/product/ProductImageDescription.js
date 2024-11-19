@@ -6,6 +6,7 @@ import Swiper, { SwiperSlide } from "../../components/swiper";
 import LayoutOne from "../../layouts/LayoutOne";
 import SEO from "../../components/seo";
 import { Breadcrumb } from "react-bootstrap";
+import "./style.scss";
 
 const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const { id } = useParams(); // Retrieve product ID from the URL
@@ -79,29 +80,31 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
               </div>
               <div className="col-lg-6 col-md-6">
                 <div className="product-details-content ml-70">
-                  <h2>{product.mainCategory}</h2>
-                  <div className="product-details-price">
-                    <span>${product.price}</span>
-                  </div>
+                <a className="des">{product.title}</a>
+                <h5 className="des" style={{textTransform: "uppercase"}}> 
+                <Link to="">{product.description}</Link>
+              </h5>
+                
+
+                  {/* <h2>{product.mainCategory}</h2> */}
+                  <div className="product-price">
+                      <Fragment>
+                        <span style={{ color: "red" ,paddingRight: "10px" }}>RS.{product.price}.00</span>{" "}
+                        <span className="old">RS.1900.00</span>
+                      </Fragment>
+                    </div><br/>
                   <div className="pro-details-rating-wrap">
                     <div className="pro-details-rating">
                       <ProductRating ratingValue={4} />
                     </div>
                   </div>
                   <div className="pro-details-list">
-                    <p>{product.description}</p>
+                    {/* <p>{product.description}</p> */}
                   </div>
 
                   <div className="pro-details-size-color">
                     <div className="pro-details-color-wrap">
-                      <span>Color</span>
-                      <div className="pro-details-color-content">
-                        <label
-                          className={`pro-details-color-content--single `}
-                        >
-                          <span className="checkmark"> {product.color}</span>
-                        </label>
-                      </div>
+                    <a className="des"> Size :</a>
                     </div>
                     {product.sizes.map((size) => (
                     <div className="pro-details-size" key={size._id}>
@@ -113,7 +116,23 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                       
                     </div>
+                    
                     ))}
+                  </div>
+                  <div className="pro-details-size-color">
+                    <div className="pro-details-color-wrap">
+                      <a className="des">Color :</a>
+                    </div>
+                    <div className="pro-details-size" >
+                      <div className="pro-details-size-content" >
+                        {/* <label className={`pro-details-size-content--single`}> */}
+                          {/* <input type="radio" value="" /> */}
+                          <a className="des"> {product.color}</a>
+                        {/* </label> */}
+                      </div>
+                      
+                    </div>
+                    
                   </div>
                   
                   <div className="pro-details-quality">
@@ -141,19 +160,21 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </button>
                     </div>
                   </div>
+                  <a className="" style={{color: "red"}}>Return Policy is not available </a>
+
                   <div className="pro-details-meta">
-                    <span>Categories :</span>
+                    <a className="des">Categories : </a>
                     <ul>
-                      <li>
+                      <li className="des">
                         <Link to="/shop-grid-standard">{product.subCategory}</Link>
                       </li>
                     </ul>
                   </div>
                   <div className="pro-details-meta">
-                    <span>Title :</span>
+                    <a className="des">Title : </a>
                     <ul>
-                      <li>
-                        <Link to="/shop-grid-standard">{product.title}</Link>
+                      <li className="des">
+                        <Link to="/shop-grid-standard">{product.mainCategory}</Link>
                       </li>
                     </ul>
                   </div>

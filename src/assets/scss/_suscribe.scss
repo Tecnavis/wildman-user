@@ -164,7 +164,7 @@
         background: none;
         background-color: #070508;
         &:hover {
-          background-color: $theme-color;
+          background-color: black;
         }
       }
       &.hover-red {
@@ -180,7 +180,7 @@
         button {
           background-color: #df262b;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
       }
@@ -189,7 +189,7 @@
         button {
           background-color: #6eab49;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
       }
@@ -199,7 +199,7 @@
           border-radius: 50px;
           background-color: #c61a32;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
       }
@@ -218,7 +218,7 @@
         button {
           background-color: #e90042;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
       }
@@ -227,7 +227,7 @@
         button {
           background-color: #ed59a0;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
       }
@@ -274,14 +274,14 @@
           color: #fff;
           border: none;
           &:hover {
-            background-color: $theme-color;
+            background-color: black;
           }
         }
         &.red-2-subscribe {
           input {
             background-color: #e90042;
             &:hover {
-              background-color: $theme-color;
+              background-color: black;
             }
           }
         }
