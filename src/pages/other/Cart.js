@@ -153,10 +153,18 @@ const handleSizeSelect = (productId, size) => {
 };
   return (
     <Fragment>
-      <SEO titleTemplate="Cart" description="Cart page of flone react minimalist eCommerce template." />
+      <SEO
+        titleTemplate="Cart"
+        description="Cart page of flone react minimalist eCommerce template."
+      />
 
       <LayoutOne headerTop="visible">
-        <Breadcrumb pages={[{ label: "Home", path: "/" }, { label: "Cart", path: "/cart" }]} />
+        <Breadcrumb
+          pages={[
+            { label: "Home", path: "/" },
+            { label: "Cart", path: "/cart" },
+          ]}
+        />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
             {customerCart.length > 0 ? (
@@ -184,27 +192,41 @@ const handleSizeSelect = (productId, size) => {
                                 <Link to="">
                                   <img
                                     className="img-fluid"
-                                    src={`${URL}/images/${item.coverimage || item.productId.coverimage}`}
+                                    src={`${URL}/images/${
+                                      item.coverimage ||
+                                      item.productId.coverimage
+                                    }`}
                                     alt=""
                                   />
                                 </Link>
                               </td>
                               <td className="product-name">
                                 <Link to="">
-                                  {item.mainCategory || item.productId.mainCategory}
+                                  {item.mainCategory ||
+                                    item.productId.mainCategory}
                                 </Link>
                                 <p>{item.color || item.productId.color}</p>
                               </td>
                               <td>
-                              <div className="cart-item-variation">
-                                <div className="flex gap-2 mt-2">
-                                {(item.sizes || item.productId.sizes || []).map((sizeItem) => (
+                                <div className="cart-item-variation">
+                                  <div className="flex gap-2 mt-2">
+                                    {(
+                                      item.sizes ||
+                                      item.productId.sizes ||
+                                      []
+                                    ).map((sizeItem) => (
                                       <button
-                                       style={{marginLeft:"2px"}}
+                                        style={{ marginLeft: "2px" }}
                                         key={sizeItem._id}
-                                        onClick={() => handleSizeSelect(item._id, sizeItem.size)}
+                                        onClick={() =>
+                                          handleSizeSelect(
+                                            item._id,
+                                            sizeItem.size
+                                          )
+                                        }
                                         className={`px-3 py-2 rounded text-sm font-medium transition-colors duration-200 border border-gray-400 shadow-sm ${
-                                          selectedSizes[item._id] === sizeItem.size
+                                          selectedSizes[item._id] ===
+                                          sizeItem.size
                                             ? "bg-gray-100 text-red border-red-500"
                                             : "bg-white hover:bg-gray-100 text-gray-800"
                                         }`}
@@ -214,26 +236,54 @@ const handleSizeSelect = (productId, size) => {
                                     ))}
                                   </div>
                                 </div>
-                                </td>
-                              <td className="product-price-cart">
-                                <span className="amount">${item.price || item.productId.price}</span>
                               </td>
+                              <td className="product-price-cart">
+                                <span className="amount">
+                                  RS.{" "}
+                                  {item.price
+                                    ? (
+                                        item.price *
+                                        (1 - (item.discount || 0) / 100)
+                                      ).toFixed(2)
+                                    : (
+                                        item.productId.price *
+                                        (1 -
+                                          (item.productId.discount || 0) / 100)
+                                      ).toFixed(2)}
+                                </span>
+                              </td>
+
                               <td className="product-quantity">
                                 <div className="cart-plus-minus">
-                                  <button className="dec qtybutton" onClick={() => decrementQuantity(item._id)}>-</button>
+                                  <button
+                                    className="dec qtybutton"
+                                    onClick={() => decrementQuantity(item._id)}
+                                  >
+                                    -
+                                  </button>
                                   <input
                                     className="cart-plus-minus-box"
                                     type="text"
                                     value={item.quantity}
                                     readOnly
                                   />
-                                  <button className="inc qtybutton" onClick={() => incrementQuantity(item._id)}>+</button>
+                                  <button
+                                    className="inc qtybutton"
+                                    onClick={() => incrementQuantity(item._id)}
+                                  >
+                                    +
+                                  </button>
                                 </div>
-                                
                               </td>
-                              <td className="product-subtotal">${(item.price || item.productId.price) * item.quantity}</td>
+                              <td className="product-subtotal">
+                                $
+                                {(item.price || item.productId.price) *
+                                  item.quantity}
+                              </td>
                               <td className="product-remove">
-                                <button onClick={() => handleDeleteCustomer(item._id)}>
+                                <button
+                                  onClick={() => handleDeleteCustomer(item._id)}
+                                >
                                   <i className="fa fa-times"></i>
                                 </button>
                               </td>
@@ -251,7 +301,12 @@ const handleSizeSelect = (productId, size) => {
                         <Link to="/shop-grid-standard">Continue Shopping</Link>
                       </div>
                       <div className="cart-clear">
-                        <button onClick={handleConfirmOrder} disabled={isConfirmOrderDisabled}>Confirm Order</button>
+                        <button
+                          onClick={handleConfirmOrder}
+                          disabled={isConfirmOrderDisabled}
+                        >
+                          Confirm Order
+                        </button>
                       </div>
                       <div className="cart-clear">
                         <button>Clear Shopping Cart</button>
@@ -286,24 +341,29 @@ const handleSizeSelect = (productId, size) => {
                         </h4>
                       </div>
                       <h5 className="sub-total">
-                        Total products <span>{checkoutDetails.totalQuantity || 0}</span>
+                        Total products{" "}
+                        <span>{checkoutDetails.totalQuantity || 0}</span>
                       </h5>
                       <h5 className="sub-total">
-                        Total Amount <span>${checkoutDetails.totalAmount || 0}.00</span>
+                        Total Amount{" "}
+                        <span>${checkoutDetails.totalAmount || 0}.00</span>
                       </h5>
                       <h5 className="sub-total">
                         Discount <span>${5}.00</span>
                       </h5>
                       <h4 className="grand-totall-title">
-                        Grand Total <span>${checkoutDetails.totalAmount -5||0}.00</span>
+                        Grand Total{" "}
+                        <span>${checkoutDetails.totalAmount - 5 || 0}.00</span>
                       </h4>
-                      <button className="checkoutbtn" onClick={handleProceedToCheckout}>
-                         Proceed to Checkout
+                      <button
+                        className="checkoutbtn"
+                        onClick={handleProceedToCheckout}
+                      >
+                        Proceed to Checkout
                       </button>
                     </div>
                   </div>
                 </div>
-
               </Fragment>
             ) : (
               <div className="row">

@@ -1,12 +1,13 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchProductDetails, URL } from "../../helpers/handle_api";
+import { createCustomerCart, createWishlist, fetchCustomerCart, fetchProductDetails, fetchWishlist, URL } from "../../helpers/handle_api";
 import ProductRating from "../../components/product/sub-components/ProductRating";
 import Swiper, { SwiperSlide } from "../../components/swiper";
 import LayoutOne from "../../layouts/LayoutOne";
 import SEO from "../../components/seo";
 import { Breadcrumb } from "react-bootstrap";
 import "./style.scss";
+import Swal from "sweetalert2";
 
 const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const { id } = useParams(); // Retrieve product ID from the URL
@@ -30,7 +31,141 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   } else {
     console.error("productId is undefined");
   }
+//
+const handleAddToWishlist = async (product) => {
+  const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
 
+  if (!customerDetails) {
+    // Handle guest user wishlist by using local storage
+    let guestWishlist =
+      JSON.parse(localStorage.getItem("guestWishlist")) || [];
+
+    // Check if the product is already in the guest wishlist
+    const isProductInGuestWishlist = guestWishlist.some(
+      (item) => item._id === product._id
+    );
+
+    if (isProductInGuestWishlist) {
+      Swal.fire({
+        icon: "info",
+        title: "Already in Wishlist",
+        text: "This product is already in your wishlist.",
+      });
+      return;
+    }
+
+    // Add product to guest wishlist
+    guestWishlist.push(product);
+    localStorage.setItem("guestWishlist", JSON.stringify(guestWishlist));
+
+    Swal.fire({
+      icon: "success",
+      title: "Added to Wishlist",
+      text: "The product has been added to your wishlist.",
+    });
+    return;
+  }
+
+  try {
+    const wishlistResponse = await fetchWishlist();
+    const existingWishlist = wishlistResponse || [];
+
+    // Check if the product is already in the user's wishlist
+    const isProductInWishlist = existingWishlist.some(
+      (item) => item.productId._id === product._id
+    );
+
+    if (isProductInWishlist) {
+      Swal.fire({
+        icon: "info",
+        title: "Already in Wishlist",
+        text: "This product is already in your wishlist.",
+      });
+      return;
+    }
+
+    // Add product to the user's wishlist in the backend
+    const wishlistData = {
+      productId: product._id,
+      customerId: customerDetails._id,
+    };
+    await createWishlist(wishlistData);
+
+    Swal.fire({
+      icon: "success",
+      title: "Added to Wishlist",
+      text: "The product has been added to your wishlist.",
+    });
+  } catch (error) {
+    console.log("Error adding to wishlist", error);
+  }
+};
+
+//add to cart
+const handleAddToCart = async (product) => {
+  const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+
+  if (!customerDetails) {
+    let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+    // Check if the product is already in the guest wishlist
+    const isProductInGuestWishlist = guestCart.some(
+      (item) => item._id === product._id
+    );
+
+    if (isProductInGuestWishlist) {
+      Swal.fire({
+        icon: "info",
+        title: "Already in Cart",
+        text: "This product is already in your cart.",
+      });
+      return;
+    }
+
+    // Add product to guest wishlist
+    guestCart.push(product);
+    localStorage.setItem("guestCart", JSON.stringify(guestCart));
+
+    Swal.fire({
+      icon: "success",
+      title: "Added to Cart",
+      text: "The product has been added to your cart.",
+    });
+    return;
+  }
+
+  try {
+    const wishlistResponse = await fetchCustomerCart();
+    const existingWishlist = wishlistResponse || [];
+    // Check if the product is already in the user's wishlist
+    const isProductInWishlist = existingWishlist.some(
+      (item) => item.productId._id === product._id
+    );
+
+    if (isProductInWishlist) {
+      Swal.fire({
+        icon: "info",
+        title: "Already in Cart",
+        text: "This product is already in your cart.",
+      });
+      return;
+    }
+
+    // Add product to the user's wishlist in the backend
+    const cartData = {
+      productId: product._id,
+      customerId: customerDetails._id,
+    };
+    await createCustomerCart(cartData);
+
+    Swal.fire({
+      icon: "success",
+      title: "Added to Cart",
+      text: "The product has been added to your cart.",
+    });
+  } catch (error) {
+    console.log("Error adding to cart", error);
+  }
+};
   return (
     <Fragment>
       <SEO titleTemplate="Product Page" description="Product details page." />
@@ -97,7 +232,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                         )}
                       </span>{" "}
                       <span className="old">
-                        MRP PRICE RS.{product.price}.00
+                        MRP.{product.price}.00
                       </span>
                     </Fragment>
                   </div>
@@ -105,7 +240,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                   <br />
                   <div className="pro-details-rating-wrap">
                     <div className="pro-details-rating">
-                      <ProductRating ratingValue={4} />
+                      <ProductRating ratingValue={product.rating} />
                     </div>
                   </div>
                   <div className="pro-details-list">
@@ -151,10 +286,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       <button className="inc qtybutton">+</button>
                     </div>
                     <div className="pro-details-cart btn-hover">
-                      <button>Add to cart</button>
+                      <button onClick={() => handleAddToCart(product)}> Add to cart</button>
                     </div>
                     <div className="pro-details-wishlist">
-                      <button>
+                      <button onClick={() => handleAddToWishlist(product)}> 
                         <i className="pe-7s-like" />
                       </button>
                     </div>
