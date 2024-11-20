@@ -1,18 +1,62 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { createCustomerCart, createWishlist, fetchCustomerCart, fetchProductDetails, fetchWishlist, URL } from "../../helpers/handle_api";
+import {
+  createCustomerCart,
+  createWishlist,
+  fetchCustomerCart,
+  fetchProductDetails,
+  fetchProducts,
+  fetchWishlist,
+  URL,
+} from "../../helpers/handle_api";
 import ProductRating from "../../components/product/sub-components/ProductRating";
 import Swiper, { SwiperSlide } from "../../components/swiper";
 import LayoutOne from "../../layouts/LayoutOne";
 import SEO from "../../components/seo";
-import { Breadcrumb } from "react-bootstrap";
+import { Breadcrumb, Nav, Tab } from "react-bootstrap";
 import "./style.scss";
 import Swal from "sweetalert2";
+import clsx from "clsx";
+import ProductModal from "../../components/product/ProductModal";
+import SectionTitle from "../../components/section-title/SectionTitle";
 
 const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
-  const { id } = useParams(); // Retrieve product ID from the URL
-  const [product, setProduct] = useState(null); // State to hold product data
+  const { id } = useParams(); 
+  const [product, setProduct] = useState(null); 
+  const [modalShow, setModalShow] = useState(false);
+  const [products, setProducts] = useState([]);
+  // Helper function to shuffle the array
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
 
+  // Fetch and display random 6 products
+  useEffect(() => {
+    fetchProducts()
+      .then((res) => {
+        const shuffledProducts = shuffleArray(res);
+        setProducts(shuffledProducts.slice(0, 4));
+      })
+      .catch((err) => {
+        console.log("Error fetching products:", err);
+      });
+  }, []);
+  const addToRecentlyViewed = (product) => {
+    let recentlyViewed =
+      JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+    const exists = recentlyViewed.find((item) => item._id === product._id);
+    if (!exists) {
+      recentlyViewed.unshift(product);
+      if (recentlyViewed.length > 6) recentlyViewed.pop();
+      localStorage.setItem("recentlyViewed", JSON.stringify(recentlyViewed));
+    }
+  };
+  //product view as popup
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+    setModalShow(true);
+  };
   useEffect(() => {
     const getProductDetails = async () => {
       try {
@@ -31,141 +75,141 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   } else {
     console.error("productId is undefined");
   }
-//
-const handleAddToWishlist = async (product) => {
-  const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+  //
+  const handleAddToWishlist = async (product) => {
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
 
-  if (!customerDetails) {
-    // Handle guest user wishlist by using local storage
-    let guestWishlist =
-      JSON.parse(localStorage.getItem("guestWishlist")) || [];
+    if (!customerDetails) {
+      // Handle guest user wishlist by using local storage
+      let guestWishlist =
+        JSON.parse(localStorage.getItem("guestWishlist")) || [];
 
-    // Check if the product is already in the guest wishlist
-    const isProductInGuestWishlist = guestWishlist.some(
-      (item) => item._id === product._id
-    );
+      // Check if the product is already in the guest wishlist
+      const isProductInGuestWishlist = guestWishlist.some(
+        (item) => item._id === product._id
+      );
 
-    if (isProductInGuestWishlist) {
+      if (isProductInGuestWishlist) {
+        Swal.fire({
+          icon: "info",
+          title: "Already in Wishlist",
+          text: "This product is already in your wishlist.",
+        });
+        return;
+      }
+
+      // Add product to guest wishlist
+      guestWishlist.push(product);
+      localStorage.setItem("guestWishlist", JSON.stringify(guestWishlist));
+
       Swal.fire({
-        icon: "info",
-        title: "Already in Wishlist",
-        text: "This product is already in your wishlist.",
+        icon: "success",
+        title: "Added to Wishlist",
+        text: "The product has been added to your wishlist.",
       });
       return;
     }
 
-    // Add product to guest wishlist
-    guestWishlist.push(product);
-    localStorage.setItem("guestWishlist", JSON.stringify(guestWishlist));
+    try {
+      const wishlistResponse = await fetchWishlist();
+      const existingWishlist = wishlistResponse || [];
 
-    Swal.fire({
-      icon: "success",
-      title: "Added to Wishlist",
-      text: "The product has been added to your wishlist.",
-    });
-    return;
-  }
+      // Check if the product is already in the user's wishlist
+      const isProductInWishlist = existingWishlist.some(
+        (item) => item.productId._id === product._id
+      );
 
-  try {
-    const wishlistResponse = await fetchWishlist();
-    const existingWishlist = wishlistResponse || [];
+      if (isProductInWishlist) {
+        Swal.fire({
+          icon: "info",
+          title: "Already in Wishlist",
+          text: "This product is already in your wishlist.",
+        });
+        return;
+      }
 
-    // Check if the product is already in the user's wishlist
-    const isProductInWishlist = existingWishlist.some(
-      (item) => item.productId._id === product._id
-    );
+      // Add product to the user's wishlist in the backend
+      const wishlistData = {
+        productId: product._id,
+        customerId: customerDetails._id,
+      };
+      await createWishlist(wishlistData);
 
-    if (isProductInWishlist) {
       Swal.fire({
-        icon: "info",
-        title: "Already in Wishlist",
-        text: "This product is already in your wishlist.",
+        icon: "success",
+        title: "Added to Wishlist",
+        text: "The product has been added to your wishlist.",
+      });
+    } catch (error) {
+      console.log("Error adding to wishlist", error);
+    }
+  };
+
+  //add to cart
+  const handleAddToCart = async (product) => {
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+
+    if (!customerDetails) {
+      let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      // Check if the product is already in the guest wishlist
+      const isProductInGuestWishlist = guestCart.some(
+        (item) => item._id === product._id
+      );
+
+      if (isProductInGuestWishlist) {
+        Swal.fire({
+          icon: "info",
+          title: "Already in Cart",
+          text: "This product is already in your cart.",
+        });
+        return;
+      }
+
+      // Add product to guest wishlist
+      guestCart.push(product);
+      localStorage.setItem("guestCart", JSON.stringify(guestCart));
+
+      Swal.fire({
+        icon: "success",
+        title: "Added to Cart",
+        text: "The product has been added to your cart.",
       });
       return;
     }
 
-    // Add product to the user's wishlist in the backend
-    const wishlistData = {
-      productId: product._id,
-      customerId: customerDetails._id,
-    };
-    await createWishlist(wishlistData);
+    try {
+      const wishlistResponse = await fetchCustomerCart();
+      const existingWishlist = wishlistResponse || [];
+      // Check if the product is already in the user's wishlist
+      const isProductInWishlist = existingWishlist.some(
+        (item) => item.productId._id === product._id
+      );
 
-    Swal.fire({
-      icon: "success",
-      title: "Added to Wishlist",
-      text: "The product has been added to your wishlist.",
-    });
-  } catch (error) {
-    console.log("Error adding to wishlist", error);
-  }
-};
+      if (isProductInWishlist) {
+        Swal.fire({
+          icon: "info",
+          title: "Already in Cart",
+          text: "This product is already in your cart.",
+        });
+        return;
+      }
 
-//add to cart
-const handleAddToCart = async (product) => {
-  const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+      // Add product to the user's wishlist in the backend
+      const cartData = {
+        productId: product._id,
+        customerId: customerDetails._id,
+      };
+      await createCustomerCart(cartData);
 
-  if (!customerDetails) {
-    let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-    // Check if the product is already in the guest wishlist
-    const isProductInGuestWishlist = guestCart.some(
-      (item) => item._id === product._id
-    );
-
-    if (isProductInGuestWishlist) {
       Swal.fire({
-        icon: "info",
-        title: "Already in Cart",
-        text: "This product is already in your cart.",
+        icon: "success",
+        title: "Added to Cart",
+        text: "The product has been added to your cart.",
       });
-      return;
+    } catch (error) {
+      console.log("Error adding to cart", error);
     }
-
-    // Add product to guest wishlist
-    guestCart.push(product);
-    localStorage.setItem("guestCart", JSON.stringify(guestCart));
-
-    Swal.fire({
-      icon: "success",
-      title: "Added to Cart",
-      text: "The product has been added to your cart.",
-    });
-    return;
-  }
-
-  try {
-    const wishlistResponse = await fetchCustomerCart();
-    const existingWishlist = wishlistResponse || [];
-    // Check if the product is already in the user's wishlist
-    const isProductInWishlist = existingWishlist.some(
-      (item) => item.productId._id === product._id
-    );
-
-    if (isProductInWishlist) {
-      Swal.fire({
-        icon: "info",
-        title: "Already in Cart",
-        text: "This product is already in your cart.",
-      });
-      return;
-    }
-
-    // Add product to the user's wishlist in the backend
-    const cartData = {
-      productId: product._id,
-      customerId: customerDetails._id,
-    };
-    await createCustomerCart(cartData);
-
-    Swal.fire({
-      icon: "success",
-      title: "Added to Cart",
-      text: "The product has been added to your cart.",
-    });
-  } catch (error) {
-    console.log("Error adding to cart", error);
-  }
-};
+  };
   return (
     <Fragment>
       <SEO titleTemplate="Product Page" description="Product details page." />
@@ -224,17 +268,22 @@ const handleAddToCart = async (product) => {
 
                   {/* <h2>{product.mainCategory}</h2> */}
                   <div className="product-price">
-                    <Fragment>
-                      <span style={{ color: "red", paddingRight: "10px" }}>
-                        RS.
-                        {(product.price * (1 - product.discount / 100)).toFixed(
-                          2
-                        )}
-                      </span>{" "}
-                      <span className="old">
-                        MRP.{product.price}.00
+                    {product.discount > 0 ? (
+                      <Fragment>
+                        <span style={{ color: "red", paddingRight: "10px" }}>
+                          RS.{" "}
+                          {(
+                            product.price *
+                            (1 - product.discount / 100)
+                          ).toFixed(2)}
+                        </span>
+                        <span className="old">MRP. {product.price}.00</span>
+                      </Fragment>
+                    ) : (
+                      <span style={{ color: "red" }}>
+                        RS. {product.price.toFixed(2)}
                       </span>
-                    </Fragment>
+                    )}
                   </div>
 
                   <br />
@@ -243,9 +292,7 @@ const handleAddToCart = async (product) => {
                       <ProductRating ratingValue={product.rating} />
                     </div>
                   </div>
-                  <div className="pro-details-list">
-                    {/* <p>{product.description}</p> */}
-                  </div>
+                  <div className="pro-details-list"></div>
 
                   <div className="pro-details-size-color">
                     <div className="pro-details-color-wrap">
@@ -286,10 +333,13 @@ const handleAddToCart = async (product) => {
                       <button className="inc qtybutton">+</button>
                     </div>
                     <div className="pro-details-cart btn-hover">
-                      <button onClick={() => handleAddToCart(product)}> Add to cart</button>
+                      <button onClick={() => handleAddToCart(product)}>
+                        {" "}
+                        Add to cart
+                      </button>
                     </div>
                     <div className="pro-details-wishlist">
-                      <button onClick={() => handleAddToWishlist(product)}> 
+                      <button onClick={() => handleAddToWishlist(product)}>
                         <i className="pe-7s-like" />
                       </button>
                     </div>
@@ -328,12 +378,15 @@ const handleAddToCart = async (product) => {
                   </div>
 
                   <hr />
-                  <div className="col-12" style={{ lineHeight: "35px" }}>
-                    <a className="des">ABOUT THIS PRODUCT</a>
+                  <div style={{ lineHeight: "35px" }} className="des col-12">
+                    <u>
+                      <a className="desc" style={{ fontWeight: "bold" }}>
+                        ABOUT THIS PRODUCT
+                      </a>
+                    </u>
                     <br />
                     MRP: {product.price + product.gst}/- Includes GST and
                     Shipping <br />
-                    Color: {product.color} <br />
                     {product.meterial && (
                       <span>
                         Material: {product.meterial} <br />
@@ -414,6 +467,262 @@ const handleAddToCart = async (product) => {
           </div>
         </div>
         <br />
+        <div className={clsx("description-review-area")}>
+          <div className="container">
+            <div className="description-review-wrapper">
+              <Tab.Container defaultActiveKey="productDescription">
+                <Nav variant="pills" className="description-review-topbar">
+                  <Nav.Item>
+                    <Nav.Link eventKey="additionalInfo">
+                      Additional Information
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="productDescription">
+                      Description
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="productReviews">Reviews(2)</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+                <Tab.Content className="description-review-bottom">
+                  <Tab.Pane eventKey="additionalInfo">
+                    <div className="product-anotherinfo-wrapper">
+                      <ul>
+                        <li>
+                          {product.price && (
+                            <span>
+                              MRP: {product.price} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {" "}
+                          {product.warranty && (
+                            <span>
+                              Warranty: {product.warranty}
+                              <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.weight && (
+                            <span>
+                              Weight: {product.weight} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.height && (
+                            <span>
+                              Height: {product.height} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.compartment && (
+                            <span>
+                              Compartment: {product.compartment} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.meterial && (
+                            <span>
+                              Material: {product.meterial} <br />
+                            </span>
+                          )}
+                        </li>
+
+                        <li>
+                          {product.outermeterial && (
+                            <span>
+                              Outer material: {product.outermeterial} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.brand && (
+                            <span>
+                              Brand: {product.brand} <br />
+                            </span>
+                          )}
+                        </li>
+                      </ul>
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="productDescription">
+                    <h4 className="desc">{product.title}</h4>
+                    <p className="des">{product.description}</p>
+                    <br />
+                    <p className="des">
+                      Vestibulum ante ipsum primis aucibus orci luctustrices
+                      posuere cubilia Curae Suspendisse viverra ed viverra.
+                      Mauris ullarper euismod vehicula. Phasellus quam nisi,
+                      congue id nulla. Vestibulum ante ipsum primis aucibus orci
+                      luctustrices posuere cubilia Curae Suspendisse viverra ed
+                      viverra. Mauris ullarper euismod vehicula. Phasellus quam
+                      nisi, congue id nulla. Vestibulum ante ipsum primis
+                      aucibus orci luctustrices posuere cubilia Curae
+                      Suspendisse viverra ed viverra. Mauris ullarper euismod
+                      vehicula. Phasellus quam nisi, congue id nulla. Vestibulum
+                      ante ipsum primis aucibus orci luctustrices posuere
+                      cubilia Curae Suspendisse viverra ed viverra. Mauris
+                      ullarper euismod vehicula. Phasellus quam nisi, congue id
+                      nulla.
+                    </p>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="productReviews">
+                    <div className="row">
+                      <div className="col-lg-7">
+                        <div className="review-wrapper">
+                          <div className="single-review">
+                            <div className="review-img">
+                              <img
+                                src={
+                                  process.env.PUBLIC_URL +
+                                  "/assets/img/testimonial/1.jpg"
+                                }
+                                alt=""
+                              />
+                            </div>
+                            <div className="review-content">
+                              <div className="review-top-wrap">
+                                <div className="review-left">
+                                  <div className="review-name">
+                                    <h4>White Lewis</h4>
+                                  </div>
+                                  <div className="review-rating">
+                                    <i className="fa fa-star" />
+                                    <i className="fa fa-star" />
+                                    <i className="fa fa-star" />
+                                    <i className="fa fa-star" />
+                                    <i className="fa fa-star" />
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="review-bottom">
+                                <p>
+                                  Vestibulum ante ipsum primis aucibus orci
+                                  luctustrices posuere cubilia Curae Suspendisse
+                                  viverra ed viverra. Mauris ullarper euismod
+                                  vehicula. Phasellus quam nisi, congue id
+                                  nulla.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-5">
+                        <div className="ratting-form-wrapper pl-50">
+                          <h3>Add a Review</h3>
+                          <div className="ratting-form">
+                            <form action="#">
+                              <div className="star-box">
+                                <span>Your rating:</span>
+                                <div className="ratting-star">
+                                  <i className="fa fa-star" />
+                                  <i className="fa fa-star" />
+                                  <i className="fa fa-star" />
+                                  <i className="fa fa-star" />
+                                  <i className="fa fa-star" />
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <div className="rating-form-style mb-10">
+                                    <input placeholder="Name" type="text" />
+                                  </div>
+                                </div>
+                                <div className="col-md-6">
+                                  <div className="rating-form-style mb-10">
+                                    <input placeholder="Email" type="email" />
+                                  </div>
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="rating-form-style mb-10">
+                                    <input
+                                      type="text"
+                                      name="Your Review"
+                                      placeholder="Message"
+                                      defaultValue={""}
+                                    />
+                                  </div>
+                                  <input
+                                    style={{
+                                      backgroundColor: "black",
+                                      color: "white",
+                                    }}
+                                    className="button"
+                                    type="submit"
+                                    defaultValue="Submit"
+                                  />
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Tab.Container>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <br />
+        <SectionTitle
+          titleText="POPULAR PRODUCTS"
+          positionClass="text-center"
+        />
+        <br />
+        <div className="product-grid-container">
+          {products.map((data, index) => (
+            <div className="product-wrap" key={index}>
+              <div className="product-img">
+                <Link
+                  to={`/productview/${data._id}`}
+                  onClick={() => addToRecentlyViewed(data)}
+                >
+                  <img
+                    className="default-img"
+                    src={`${URL}/images/${data.coverimage}`}
+                    alt=""
+                  />
+                  <img
+                    className="hover-img"
+                    src={`${URL}/images/${data.coverimage}`}
+                    alt=""
+                  />
+                </Link>
+                <div className="product-img-badges">
+                  {data.discount && (
+                    <span className="pink">-{data.discount}%</span>
+                  )}
+                </div>
+              </div>
+              <div className="product-content text-center">
+                <a className="des">{data.description}</a>
+                <div className="product-price">
+                  <span>$1000.00</span>
+                </div>
+                <h5 className="des">
+                  <Link to={`/productview/${data._id}`}>{data.title}</Link>
+                </h5>
+              </div>
+            </div>
+          ))}
+        </div>
+        <br />
+
+        <ProductModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          product={selectedProduct}
+        />
       </LayoutOne>
     </Fragment>
   );
