@@ -246,7 +246,7 @@ const ProductGridSingle = () => {
               </h5>
               
               <div className="product-rating">
-                <Rating ratingValue={4} />
+                <Rating ratingValue={data.rating} />
               </div>
             </div>
           </div>

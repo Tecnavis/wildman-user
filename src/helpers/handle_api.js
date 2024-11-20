@@ -8,6 +8,18 @@ import Swal from 'sweetalert2';
 export const  URL = `http://localhost:3000`;
 // export const  URL = `https://api.wildman.tecnavis.com`;
 
+//fetch order product by customerId
+export const fetchOrderProducts = async (customerId) => {
+  try {
+    const response = await fetch(`${URL}/customerorder/${customerId}`);
+    if (!response.ok) throw new Error("Order not found");
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching order products:", error);
+    throw error;
+  }
+}
+//fetch product details
 export const fetchProductDetails = async (productId) => {
     try {
       const response = await fetch(`${URL}/product/${productId}`);
