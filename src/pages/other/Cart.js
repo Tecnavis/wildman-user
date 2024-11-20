@@ -97,7 +97,7 @@ const handleConfirmOrder = () => {
     .filter((item) => item.quantity > 0) 
     .map((item) => ({
       productDetails: {
-        id: item._id,
+        id: item.productId._id,
         color: item.color || item.productId.color,
         title: item.title || item.productId.title,
         mainCategory: item.mainCategory || item.productId.mainCategory,
