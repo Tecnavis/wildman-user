@@ -41,6 +41,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         console.log("Error fetching products:", err);
       });
   }, []);
+  //add to recently viewed
   const addToRecentlyViewed = (product) => {
     let recentlyViewed =
       JSON.parse(localStorage.getItem("recentlyViewed")) || [];
@@ -75,20 +76,15 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   } else {
     console.error("productId is undefined");
   }
-  //
+  //add to wishlist
   const handleAddToWishlist = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-
     if (!customerDetails) {
-      // Handle guest user wishlist by using local storage
       let guestWishlist =
         JSON.parse(localStorage.getItem("guestWishlist")) || [];
-
-      // Check if the product is already in the guest wishlist
       const isProductInGuestWishlist = guestWishlist.some(
         (item) => item._id === product._id
       );
-
       if (isProductInGuestWishlist) {
         Swal.fire({
           icon: "info",
@@ -97,11 +93,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
-
-      // Add product to guest wishlist
       guestWishlist.push(product);
       localStorage.setItem("guestWishlist", JSON.stringify(guestWishlist));
-
       Swal.fire({
         icon: "success",
         title: "Added to Wishlist",
@@ -109,12 +102,9 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
       return;
     }
-
     try {
       const wishlistResponse = await fetchWishlist();
       const existingWishlist = wishlistResponse || [];
-
-      // Check if the product is already in the user's wishlist
       const isProductInWishlist = existingWishlist.some(
         (item) => item.productId._id === product._id
       );
@@ -127,14 +117,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
-
-      // Add product to the user's wishlist in the backend
       const wishlistData = {
         productId: product._id,
         customerId: customerDetails._id,
       };
       await createWishlist(wishlistData);
-
       Swal.fire({
         icon: "success",
         title: "Added to Wishlist",
@@ -148,14 +135,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   //add to cart
   const handleAddToCart = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-
     if (!customerDetails) {
       let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-      // Check if the product is already in the guest wishlist
       const isProductInGuestWishlist = guestCart.some(
         (item) => item._id === product._id
       );
-
       if (isProductInGuestWishlist) {
         Swal.fire({
           icon: "info",
@@ -164,11 +148,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
-
-      // Add product to guest wishlist
       guestCart.push(product);
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
-
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
@@ -176,15 +157,12 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
       return;
     }
-
     try {
       const wishlistResponse = await fetchCustomerCart();
       const existingWishlist = wishlistResponse || [];
-      // Check if the product is already in the user's wishlist
       const isProductInWishlist = existingWishlist.some(
         (item) => item.productId._id === product._id
       );
-
       if (isProductInWishlist) {
         Swal.fire({
           icon: "info",
@@ -193,14 +171,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
-
-      // Add product to the user's wishlist in the backend
       const cartData = {
         productId: product._id,
         customerId: customerDetails._id,
       };
       await createCustomerCart(cartData);
-
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
@@ -294,7 +269,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                   </div>
                   <div className="pro-details-list"></div>
 
-                  <div className="pro-details-size-color">
+                  <div className="pro-details-size-color" style={{display:"flex"}}>
                     <div className="pro-details-color-wrap">
                       <a className="des"> Size :</a>
                     </div>
@@ -309,7 +284,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     ))}
                   </div>
-                  <div className="pro-details-size-color">
+                  <div className="pro-details-size-color" style={{display:"flex"}}>
                     <div className="pro-details-color-wrap">
                       <a className="des">Color :</a>
                     </div>
