@@ -35,3 +35,16 @@
     font-size: var(--text-h4);
     line-height: 1.6;
   }
+  /* Default styling for desktop and tablet */
+.col-xs-4 {
+  flex: 0 0 25%; /* Default to 4 items per row */
+  max-width: 25%;
+}
+
+/* Adjust for mobile view (2 items per row) */
+@media (max-width: 576px) {
+  .col-xs-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}

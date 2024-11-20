@@ -10,6 +10,7 @@ import {
   fetchWishlist,
 } from "../../helpers/handle_api";
 import Swal from "sweetalert2";
+import "./style.scss";
 
 const ShopProducts = ({ products, layout }) => {
   const [modalShow, setModalShow] = useState(false);
@@ -139,8 +140,8 @@ const ShopProducts = ({ products, layout }) => {
       <div className="row">
         <Fragment>
           {products.map((item, index) => (
-            <div className={`col-xl-4 col-sm-6`} key={index}>
-              <Fragment>
+            <div className={`col-xl-3 col-lg-4 col-sm-6 col-xs-4`} key={index}>
+            <Fragment>
                 <div className="product-wrap">
                   <div className="product-img">
                     <Link to={`/productview/${item._id}`}>
@@ -182,13 +183,6 @@ const ShopProducts = ({ products, layout }) => {
                   </div>
                   <div className="product-content text-center">
                     <a className="des">{item.description}</a>
-
-                    {/* <div className="product-price">
-                      <Fragment>
-                        <span>${item.price}</span>{" "}
-                        <span className="old">$1900</span>
-                      </Fragment>
-                    </div> */}
                     <div className="product-price">
                       {item.discount > 0 ? (
                         <Fragment>
