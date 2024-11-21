@@ -232,6 +232,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     </div>
                   </div>
+                  {/* //video */}
+                  {/* //video */}
                 </div>
               </div>
               <div className="col-lg-6 col-md-6">
@@ -243,24 +245,29 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
                   {/* <h2>{product.mainCategory}</h2> */}
                   <div className="product-price">
-  {product.discount > 0 ? (
-    <Fragment>
-      <span style={{ color: "red", paddingRight: "10px" }}>
-        RS. {(product.price * (1 - product.discount / 100)).toFixed(2)}
-      </span>
-      <span className="old">MRP. {product.price}.00</span>
-      <p style={{ color: "green" }}>
-        You saved RS.{" "}
-        {(product.price - product.price * (1 - product.discount / 100)).toFixed(
-          2
-        )}
-        !
-      </p>
-    </Fragment>
-  ) : (
-    <span >RS. {product.price.toFixed(2)}</span>
-  )}
-</div>
+                    {product.discount > 0 ? (
+                      <Fragment>
+                        <span style={{ color: "red", paddingRight: "10px" }}>
+                          RS.{" "}
+                          {(
+                            product.price *
+                            (1 - product.discount / 100)
+                          ).toFixed(2)}
+                        </span>
+                        <span className="old">MRP. {product.price}.00</span>
+                        <p style={{ color: "green" }}>
+                          You saved RS.{" "}
+                          {(
+                            product.price -
+                            product.price * (1 - product.discount / 100)
+                          ).toFixed(2)}
+                          !
+                        </p>
+                      </Fragment>
+                    ) : (
+                      <span>RS. {product.price.toFixed(2)}</span>
+                    )}
+                  </div>
 
                   <br />
                   <div className="pro-details-rating-wrap">
@@ -270,7 +277,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                   </div>
                   <div className="pro-details-list"></div>
 
-                  <div className="pro-details-size-color" style={{display:"flex"}}>
+                  <div
+                    className="pro-details-size-color"
+                    style={{ display: "flex" }}
+                  >
                     <div className="pro-details-color-wrap">
                       <a className="des"> Size :</a>
                     </div>
@@ -285,7 +295,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     ))}
                   </div>
-                  <div className="pro-details-size-color" style={{display:"flex"}}>
+                  <div
+                    className="pro-details-size-color"
+                    style={{ display: "flex" }}
+                  >
                     <div className="pro-details-color-wrap">
                       <a className="des">Color :</a>
                     </div>
@@ -362,16 +375,18 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     </u>
                     <br />
                     <div className="product-price">
-  {product.gst ? (
-    <Fragment>
-      <span>MRP: {product.price + product.gst}/- Includes GST</span>
-    </Fragment>
-  ) : (
-    <Fragment>
-      <span>MRP: {product.price}/-</span>
-    </Fragment>
-  )}
-</div>
+                      {product.gst ? (
+                        <Fragment>
+                          <span>
+                            MRP: {product.price + product.gst}/- Includes GST
+                          </span>
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          <span>MRP: {product.price}/-</span>
+                        </Fragment>
+                      )}
+                    </div>
                     Shipping <br />
                     {product.meterial && (
                       <span>
@@ -417,8 +432,9 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </span>
                     )}
                   </div>
+                  <br />
 
-                  <div className="pro-details-social">
+                  {/* <div className="pro-details-social">
                     <ul>
                       <li>
                         <a href="//facebook.com">
@@ -446,12 +462,57 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                         </a>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <Swiper>
+          {product.videoLink &&
+            product.videoLink.map((video, index) => {
+              // Check if the link is a YouTube URL
+              const isYouTube = video.includes("youtu");
+
+              return (
+                <SwiperSlide key={index}>
+                  <div className="single-video">
+                    {isYouTube ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${
+                          video.split("v=")[1] ||
+                          video.split("/").pop().split("?")[0]
+                        }?autoplay=1&loop=1&rel=0&playlist=${
+                          video.split("v=")[1] ||
+                          video.split("/").pop().split("?")[0]
+                        }`}
+                        title={`Video ${index}`}
+                        className="img-fluid"
+                        frameBorder="0"
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                        style={{ width: "100%", height: "300px" }}
+                      />
+                    ) : (
+                      <video
+                        src={video}
+                        className="img-fluid"
+                        controls
+                        preload="metadata"
+                        autoPlay
+                        muted
+                        loop
+                        style={{ width: "100%", height: "auto" }}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
+                  </div>
+                  {/* Removed other components */}
+                </SwiperSlide>
+              );
+            })}
+        </Swiper>
         <br />
         <div className={clsx("description-review-area")}>
           <div className="container">
@@ -666,50 +727,46 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         />
         <br />
         <div className="container">
-        <div className="row">
-  {products.map((data, index) => (
-    <div
-      className="col-6 col-sm-6 col-md-6 col-lg-3"
-      key={index}
-    >
-      <div className="product-wrap">
-        <div className="product-img">
-          <Link
-            to={`/productview/${data._id}`}
-            onClick={() => addToRecentlyViewed(data)}
-          >
-            <img
-              className="default-img"
-              src={`${URL}/images/${data.coverimage}`}
-              alt=""
-            />
-            <img
-              className="hover-img"
-              src={`${URL}/images/${data.coverimage}`}
-              alt=""
-            />
-          </Link>
-          <div className="product-img-badges">
-            {data.discount && (
-              <span className="pink">-{data.discount}%</span>
-            )}
+          <div className="row">
+            {products.map((data, index) => (
+              <div className="col-6 col-sm-6 col-md-6 col-lg-3" key={index}>
+                <div className="product-wrap">
+                  <div className="product-img">
+                    <Link
+                      to={`/productview/${data._id}`}
+                      onClick={() => addToRecentlyViewed(data)}
+                    >
+                      <img
+                        className="default-img"
+                        src={`${URL}/images/${data.coverimage}`}
+                        alt=""
+                      />
+                      <img
+                        className="hover-img"
+                        src={`${URL}/images/${data.coverimage}`}
+                        alt=""
+                      />
+                    </Link>
+                    <div className="product-img-badges">
+                      {data.discount && (
+                        <span className="pink">-{data.discount}%</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="product-content text-center">
+                    <a className="des">{data.description}</a>
+                    <div className="product-price">
+                      <span>$1000.00</span>
+                    </div>
+                    <h5 className="des">
+                      <Link to={`/productview/${data._id}`}>{data.title}</Link>
+                    </h5>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="product-content text-center">
-          <a className="des">{data.description}</a>
-          <div className="product-price">
-            <span>$1000.00</span>
-          </div>
-          <h5 className="des">
-            <Link to={`/productview/${data._id}`}>{data.title}</Link>
-          </h5>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-
-</div>
 
         <br />
 
