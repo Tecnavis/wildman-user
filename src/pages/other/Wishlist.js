@@ -133,7 +133,7 @@ const handleAddToCart = async (product) => {
                           {wishlistItems.map((item) => (
                             <tr key={item._id}>
                               <td className="product-thumbnail">
-                                <Link >
+                              <Link to={`/productview/${item.productId._id||item._id}`}>
                                   <img
                                     className="img-fluid"
                                     src={`${URL}/images/${item.coverimage || item.productId.coverimage}`}

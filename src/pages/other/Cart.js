@@ -21,6 +21,8 @@ const Cart = () => {
             quantity: 1, // initialize with default quantity of 1
           }));
           setCustomerCart(cartWithQuantity);
+          console.log("Cart data:", cartWithQuantity);
+          
         })
         .catch((err) => {
           console.log(err);
@@ -189,7 +191,7 @@ const handleSizeSelect = (productId, size) => {
                           {customerCart.map((item) => (
                             <tr key={item._id}>
                               <td className="product-thumbnail">
-                                <Link to="">
+                              <Link to={`/productview/${item.productId._id||item._id}`}>
                                   <img
                                     className="img-fluid"
                                     src={`${URL}/images/${

@@ -1,16 +1,29 @@
-import React from 'react';
-import { Fragment, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Accordion from "react-bootstrap/Accordion";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { URL, fetchOrderProducts } from "../../helpers/handle_api";
 
 const MyAccount = () => {
-  let { pathname } = useLocation();
+  const { pathname } = useLocation();
   const [orderProducts, setOrderProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const handleShowModal = (order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedOrder(null);
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -22,14 +35,8 @@ const MyAccount = () => {
         }
 
         const response = await fetchOrderProducts(customerDetails._id);
-        console.log("API Response:", response); // Debug log
-
-        // Check if response.orders exists and is an array
         const orders = response.orders || response;
-        const ordersArray = Array.isArray(orders) ? orders : [];
-        
-        console.log("Processed Orders:", ordersArray); // Debug log
-        setOrderProducts(ordersArray);
+        setOrderProducts(Array.isArray(orders) ? orders : []);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -52,10 +59,7 @@ const MyAccount = () => {
 
   return (
     <Fragment>
-      <SEO
-        titleTemplate="My Account"
-        description="My Account page of flone react minimalist eCommerce template."
-      />
+      <SEO titleTemplate="My Account" description="My Account page." />
       <LayoutOne headerTop="visible">
         <Breadcrumb
           pages={[
@@ -90,84 +94,73 @@ const MyAccount = () => {
                               <div key={order._id || index} className="border rounded p-4 mb-4">
                                 <div className="row">
                                   <div className="col-md-6">
-                                    <h5>Order #{order.orderId}</h5>
+                                    <h5
+                                      style={{ fontWeight: "bold", cursor: "pointer" }}
+                                      onClick={() => handleShowModal(order)}
+                                    >
+                                      Order # {order.orderId}
+                                    </h5>
                                     <p className="text-muted">
-                                      {new Date(order.orderDate).toLocaleDateString()}
+                                      Order Date {new Date(order.orderDate).toLocaleDateString()}
                                     </p>
                                   </div>
                                   <div className="col-md-6 text-md-end">
                                     <div className="mb-2">
                                       <span className="badge bg-primary me-2">
-                                        {order.orderStatus}
-                                      </span>
-                                      <span className="badge bg-info">
-                                        {order.paymentStatus}
+                                        {order.deliveryStatus}
                                       </span>
                                     </div>
-                                    <h6>Total: ₹{order.totalAmount}</h6>
+                                    <h6 style={{color:"red"}}>Total: ₹{order.totalAmount}</h6>
                                   </div>
                                 </div>
 
                                 <div className="border-top pt-3 mt-3">
-                                  {order.products && order.products.map((product, productIndex) => (
-                                    <div key={productIndex} className="row mb-3">
-                                      <div className="col-md-3">
-                                        <img
-                                          src={`${URL}/images/${product.productDetails.coverImage}`}
-                                          alt={product.productDetails.title}
-                                          className="img-fluid rounded"
-                                          onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = "/assets/img/default-product.jpg";
-                                          }}
-                                        />
+                                  {order.products &&
+                                    order.products.map((product, productIndex) => (
+                                      <div key={productIndex} className="row mb-3">
+                                        <div className="col-md-2">
+                                          <Link to={`/productview/${product.productDetails.id}`}>
+                                          <img
+                                            src={`${URL}/images/${product.productDetails.coverImage}`}
+                                            alt={product.productDetails.title}
+                                            className="img-fluid rounded"
+                                            onError={(e) => {
+                                              e.target.onerror = null;
+                                              e.target.src = "/assets/img/default-product.jpg";
+                                            }}
+                                          />
+                                          </Link>
+                                        </div>
+                                        <div className="col-md-6">
+                                          <h6>{product.productDetails.title}</h6>
+                                          <p className="mb-3">
+                                            {product.productDetails.mainCategory} -{" "}
+                                            {product.productDetails.subCategory}
+                                          </p>
+                                          <p className="mb-1">
+                                            Size: {product.sizeDetails.size} | Quantity:{" "}
+                                            {product.sizeDetails.quantity}
+                                          </p>
+                                          <p className="text-muted mb-0">
+                                            Color: {product.productDetails.color}
+                                          </p>
+                                        </div>
+                                        <div className="col-md-3 text-md-end">
+                                          <div className="d-flex justify-content-end">
+                                            <button className="btn btn-secondary me-2" style={{height:"fit-content" }}>
+                                              Return
+                                            </button>
+                                            <button className="btn btn-success" style={{height:"fit-content" }}>
+                                              Reorder
+                                            </button>
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className="col-md-6">
-                                        <h6>{product.productDetails.title}</h6>
-                                        <p className="mb-1">
-                                          {product.productDetails.mainCategory} - {product.productDetails.subCategory}
-                                        </p>
-                                        <p className="mb-1">
-                                          Size: {product.sizeDetails.size} | 
-                                          Quantity: {product.sizeDetails.quantity}
-                                        </p>
-                                        <p className="text-muted mb-0">
-                                          Color: {product.productDetails.color}
-                                        </p>
-                                      </div>
-                                      <div className="col-md-3 text-md-end">
-                                        <h6>₹{product.productDetails.price * product.sizeDetails.quantity}</h6>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                <div className="border-top pt-3 mt-3">
-                                  <h6 className="mb-3">Delivery Details</h6>
-                                  <div className="row">
-                                    <div className="col-md-6">
-                                      <p className="mb-1"><strong>Name:</strong> {order.customerName}</p>
-                                      <p className="mb-1"><strong>Address:</strong> {order.address}</p>
-                                      <p className="mb-1"><strong>PIN:</strong> {order.Pincode}</p>
-                                    </div>
-                                    <div className="col-md-6">
-                                      <p className="mb-1"><strong>Phone:</strong> {order.phone}</p>
-                                      <p className="mb-1"><strong>Payment:</strong> {order.paymentMethod}</p>
-                                      <p className="mb-1"><strong>Delivery:</strong> {order.deliveryStatus}</p>
-                                    </div>
-                                  </div>
+                                    ))}
                                 </div>
                               </div>
                             ))
                           )}
-
-                          <div className="billing-back-btn">
-                            <div className="billing-btn">
-                              <button type="submit" className="btn btn-primary">
-                                Continue Shopping
-                              </button>
-                            </div>
-                          </div>
                         </div>
                       </Accordion.Body>
                     </Accordion.Item>
@@ -178,6 +171,26 @@ const MyAccount = () => {
           </div>
         </div>
       </LayoutOne>
+
+      {/* Modal for Shipping Details */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Shipping Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedOrder && (
+            <>
+              <p className="mb-1">{selectedOrder.customerName}</p>
+              <p className="mb-1">{selectedOrder.address}</p>
+              <p className="mb-1">{selectedOrder.Pincode}(Pin)</p>
+              <p className="mb-1">
+                {selectedOrder.phone} <br />
+                {selectedOrder.email}
+              </p>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
     </Fragment>
   );
 };
