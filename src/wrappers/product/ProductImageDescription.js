@@ -17,14 +17,16 @@ import { Breadcrumb, Nav, Tab } from "react-bootstrap";
 import "./style.scss";
 import Swal from "sweetalert2";
 import clsx from "clsx";
-import ProductModal from "../../components/product/ProductModal";
 import SectionTitle from "../../components/section-title/SectionTitle";
 
 const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const { id } = useParams(); 
   const [product, setProduct] = useState(null); 
-  const [modalShow, setModalShow] = useState(false);
   const [products, setProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [userRating, setUserRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewImage, setReviewImage] = useState(null);
   // Helper function to shuffle the array
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -52,12 +54,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       localStorage.setItem("recentlyViewed", JSON.stringify(recentlyViewed));
     }
   };
-  //product view as popup
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const handleQuickView = (product) => {
-    setSelectedProduct(product);
-    setModalShow(true);
-  };
+// Fetch product details
   useEffect(() => {
     const getProductDetails = async () => {
       try {
@@ -185,6 +182,70 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       console.log("Error adding to cart", error);
     }
   };
+ //submit review
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+    if (!customerDetails) {
+      Swal.fire({
+        icon: "error",
+        title: "Login Required",
+        text: "Please login to submit a review",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("productId", id);
+    formData.append("customerId", customerDetails._id);
+    formData.append("rating", userRating);
+    formData.append("review", reviewText);
+    if (reviewImage) {
+      formData.append("image", reviewImage);
+    }
+
+    try {
+      const response = await fetch(`${URL}/review`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Review Submitted",
+          text: "Thank you for your review!",
+        });
+        
+        // Refresh reviews
+        const updatedReviews = await fetch(`${URL}/review/${id}`);
+        const data = await updatedReviews.json();
+        setReviews(data);
+
+        // Reset form
+        setUserRating(0);
+        setReviewText("");
+        setReviewImage(null);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to submit review. Please try again.",
+      });
+    }
+  };
+  const renderStars = (rating) => {
+    return [...Array(5)].map((_, index) => (
+      <i
+        key={index}
+        className={`fa fa-star${index < rating ? "" : "-o"}`}
+        style={{ color: index < rating ? "#ffa900" : "#d3ced2" }}
+      />
+    ));
+  };
   return (
     <Fragment>
       <SEO titleTemplate="Product Page" description="Product details page." />
@@ -232,8 +293,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     </div>
                   </div>
-                  {/* //video */}
-                  {/* //video */}
                 </div>
               </div>
               <div className="col-lg-6 col-md-6">
@@ -243,7 +302,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <Link to="">{product.description}</Link>
                   </h5>
 
-                  {/* <h2>{product.mainCategory}</h2> */}
                   <div className="product-price">
                     {product.discount > 0 ? (
                       <Fragment>
@@ -433,36 +491,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     )}
                   </div>
                   <br />
-
-                  {/* <div className="pro-details-social">
-                    <ul>
-                      <li>
-                        <a href="//facebook.com">
-                          <i className="fa fa-facebook" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="//dribbble.com">
-                          <i className="fa fa-dribbble" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="//pinterest.com">
-                          <i className="fa fa-pinterest-p" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="//twitter.com">
-                          <i className="fa fa-twitter" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="//linkedin.com">
-                          <i className="fa fa-linkedin" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -473,7 +501,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
             product.videoLink.map((video, index) => {
               // Check if the link is a YouTube URL
               const isYouTube = video.includes("youtu");
-
               return (
                 <SwiperSlide key={index}>
                   <div className="single-video">
@@ -606,114 +633,99 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <p className="des">
                       Vestibulum ante ipsum primis aucibus orci luctustrices
                       posuere cubilia Curae Suspendisse viverra ed viverra.
-                      Mauris ullarper euismod vehicula. Phasellus quam nisi,
-                      congue id nulla. Vestibulum ante ipsum primis aucibus orci
-                      luctustrices posuere cubilia Curae Suspendisse viverra ed
-                      viverra. Mauris ullarper euismod vehicula. Phasellus quam
-                      nisi, congue id nulla. Vestibulum ante ipsum primis
-                      aucibus orci luctustrices posuere cubilia Curae
-                      Suspendisse viverra ed viverra. Mauris ullarper euismod
-                      vehicula. Phasellus quam nisi, congue id nulla. Vestibulum
-                      ante ipsum primis aucibus orci luctustrices posuere
-                      cubilia Curae Suspendisse viverra ed viverra. Mauris
-                      ullarper euismod vehicula. Phasellus quam nisi, congue id
-                      nulla.
+                      Mauris ullarper euismod vehicula. 
                     </p>
                   </Tab.Pane>
                   <Tab.Pane eventKey="productReviews">
-                    <div className="row">
-                      <div className="col-lg-7">
-                        <div className="review-wrapper">
-                          <div className="single-review">
-                            <div className="review-img">
-                              <img
-                                src={
-                                  process.env.PUBLIC_URL +
-                                  "/assets/img/testimonial/1.jpg"
-                                }
-                                alt=""
-                              />
-                            </div>
-                            <div className="review-content">
-                              <div className="review-top-wrap">
-                                <div className="review-left">
-                                  <div className="review-name">
-                                    <h4>White Lewis</h4>
-                                  </div>
-                                  <div className="review-rating">
-                                    <i className="fa fa-star" />
-                                    <i className="fa fa-star" />
-                                    <i className="fa fa-star" />
-                                    <i className="fa fa-star" />
-                                    <i className="fa fa-star" />
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="review-bottom">
-                                <p>
-                                  Vestibulum ante ipsum primis aucibus orci
-                                  luctustrices posuere cubilia Curae Suspendisse
-                                  viverra ed viverra. Mauris ullarper euismod
-                                  vehicula. Phasellus quam nisi, congue id
-                                  nulla.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+      <div className="row">
+        <div className="col-lg-7">
+          <div className="review-wrapper">
+              <p>No reviews yet. Be the first to review this product!</p>
+          
+                <div className="single-review" >
+                  <div className="review-img">
+                      <img
+                        src={process.env.PUBLIC_URL + "/assets/img/testimonial/default.jpg"}
+                        alt="Default"
+                      />
+                  </div>
+                  <div className="review-content">
+                    <div className="review-top-wrap">
+                      <div className="review-left">
+                        <div className="review-name">
+                          <h4>customer Name</h4>
                         </div>
-                      </div>
-                      <div className="col-lg-5">
-                        <div className="ratting-form-wrapper pl-50">
-                          <h3>Add a Review</h3>
-                          <div className="ratting-form">
-                            <form action="#">
-                              <div className="star-box">
-                                <span>Your rating:</span>
-                                <div className="ratting-star">
-                                  <i className="fa fa-star" />
-                                  <i className="fa fa-star" />
-                                  <i className="fa fa-star" />
-                                  <i className="fa fa-star" />
-                                  <i className="fa fa-star" />
-                                </div>
-                              </div>
-                              <div className="row">
-                                <div className="col-md-6">
-                                  <div className="rating-form-style mb-10">
-                                    <input placeholder="Name" type="text" />
-                                  </div>
-                                </div>
-                                <div className="col-md-6">
-                                  <div className="rating-form-style mb-10">
-                                    <input placeholder="Email" type="email" />
-                                  </div>
-                                </div>
-                                <div className="col-md-12">
-                                  <div className="rating-form-style mb-10">
-                                    <input
-                                      type="text"
-                                      name="Your Review"
-                                      placeholder="Message"
-                                      defaultValue={""}
-                                    />
-                                  </div>
-                                  <input
-                                    style={{
-                                      backgroundColor: "black",
-                                      color: "white",
-                                    }}
-                                    className="button"
-                                    type="submit"
-                                    defaultValue="Submit"
-                                  />
-                                </div>
-                              </div>
-                            </form>
-                          </div>
+                        <div className="review-rating">
+                          {renderStars(4)}
                         </div>
                       </div>
                     </div>
-                  </Tab.Pane>
+                    <div className="review-bottom">
+                      <p>Review</p>
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <div className="col-lg-5">
+          <div className="ratting-form-wrapper pl-50">
+            <h3>Add a Review</h3>
+            <div className="ratting-form">
+              <form onSubmit={handleReviewSubmit}>
+                <div className="star-box">
+                  <span>Your rating:</span>
+                  <div className="ratting-star">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        className={`fa fa-star${star <= userRating ? "" : "-o"}`}
+                        onClick={() => setUserRating(star)}
+                        style={{ 
+                          cursor: "pointer",
+                          color: star <= userRating ? "#ffa900" : "#d3ced2"
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="rating-form-style mb-10">
+                      <textarea
+                        placeholder="Your Review"
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="rating-form-style mb-10">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setReviewImage(e.target.files[0])}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="button"
+                      style={{
+                        backgroundColor: "black",
+                        color: "white",
+                        border: "none",
+                        padding: "10px 20px",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Submit Review
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Tab.Pane>
                 </Tab.Content>
               </Tab.Container>
             </div>
@@ -770,11 +782,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
         <br />
 
-        <ProductModal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-          product={selectedProduct}
-        />
       </LayoutOne>
     </Fragment>
   );
