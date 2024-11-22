@@ -35,7 +35,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
   // Fetch and display random 6 products
   useEffect(() => {
-    // fetchReviews();
     fetchProducts()
       .then((res) => {
         const shuffledProducts = shuffleArray(res);
@@ -57,13 +56,12 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       if (data.success && Array.isArray(data.reviews)) {
         setReviews(data.reviews);
       } else {
-        // If data.reviews is not an array, initialize it as an empty array
         setReviews([]);
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reviews:", error);
-      setReviews([]); // Initialize as empty array on error
+      setReviews([]); 
       setLoading(false);
     }
   };
