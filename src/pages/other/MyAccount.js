@@ -16,8 +16,58 @@ const MyAccount = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  //edit customer details
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  useEffect(() => {
+    // Fetch customer details from localStorage
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails") || "{}");
+    if (customerDetails) {
+      setFormData({
+        name: customerDetails.name || "",
+        email: customerDetails.email || "",
+        phone: customerDetails.phone || "",
+        address: customerDetails.address || "",
+      });
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+//update customer details
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails") || "{}");
+    try {
+      const response = await axios.put(
+        `${URL}/customer/${customerDetails._id}`,
+        formData
+      );
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Success",
+          text: "Customer details updated successfully!",
+        })
+        localStorage.setItem("customerDetails", JSON.stringify(response.data));
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "An error occurred while updating.",
+      })
+    }
+  };
+  //return product
   const handleReturnClick = (productId) => {
-    // const returnMessage = `Return requested for Shop: ${shopName}, Product ID: ${productId}`;
     axios
       .post(`${URL}/notification/return-request`, { productId })
       .then((response) => {
@@ -40,6 +90,7 @@ const MyAccount = () => {
   const isReturnDisabled = (status) => {
     return ["Returned", "Cancelled"].includes(status);
   };
+  //order details
   const handleShowModal = (order) => {
     setSelectedOrder(order);
     setShowModal(true);
@@ -49,6 +100,7 @@ const MyAccount = () => {
     setShowModal(false);
     setSelectedOrder(null);
   };
+  //order status color
   const getStatusStyle = (status) => {
     switch (status) {
       case "Delivered":
@@ -67,6 +119,7 @@ const MyAccount = () => {
         return { color: "black" };
     }
   };
+  //fetch orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -128,44 +181,59 @@ const MyAccount = () => {
                       <Accordion.Body>
                         <div className="myaccount-info-wrapper">
                           <div className="account-info-wrapper">
-                            <h4>My Account Information</h4>
-                            <h5>Your Personal Details</h5>
+                          <h5>YOUR PERSONAL INFORMATION</h5>
                           </div>
                           <div className="row">
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
-                                <label>First Name</label>
-                                <input type="text" />
+                                <label>Enter Your Name</label>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
-                                <label>Last Name</label>
-                                <input type="text" />
-                              </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12">
-                              <div className="billing-info">
-                                <label>Email Address</label>
-                                <input type="email" />
-                              </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                              <div className="billing-info">
-                                <label>Telephone</label>
-                                <input type="text" />
+                                <label>Enter Your Email</label>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={formData.email}
+                                  onChange={handleChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
-                                <label>Fax</label>
-                                <input type="text" />
+                                <label>Enter Your Phone</label>
+                                <input
+                                  type="tel"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleChange}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6">
+                              <div className="billing-info">
+                                <label>Your Address</label>
+                                <input
+                                  type="text"
+                                  name="address"
+                                  value={formData.address}
+                                  onChange={handleChange}
+                                />
                               </div>
                             </div>
                           </div>
                           <div className="billing-back-btn">
                             <div className="billing-btn">
-                              <button type="submit">Continue</button>
+                              <button type="submit" onClick={handleSubmit}>
+                                Update
+                              </button>
                             </div>
                           </div>
                         </div>
