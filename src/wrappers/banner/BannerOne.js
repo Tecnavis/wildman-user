@@ -11,7 +11,7 @@ const BannerOne = ({ spaceTopClass, spaceBottomClass }) => {
     fetchAbout().then((res) => {
       setAbout(res);
     });
-  });
+  },[]);
   return (
     <div className={clsx("banner-area", spaceTopClass, spaceBottomClass)}>
       <div className="container">

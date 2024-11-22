@@ -32,7 +32,7 @@ const BrandLogoSliderOne = ({ spaceBottomClass, spaceTopClass }) => {
     fetchProducts().then((res) => {
       setProducts(res);
     });
-  });
+  },[]);
   return (
     <div className={clsx("brand-logo-area", spaceBottomClass, spaceTopClass)}>
       <div className="container">

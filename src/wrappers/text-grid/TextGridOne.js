@@ -12,7 +12,7 @@ const TextGridOne = ({ spaceBottomClass }) => {
     fetchAbout().then((res) => {
       setAbout(res);
     });
-  });
+  },[]);
   return (
     <div className={clsx("about-mission-area", spaceBottomClass)}>
       <div className="container">

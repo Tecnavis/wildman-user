@@ -11,7 +11,7 @@ const SectionTitleWithText = ({ spaceTopClass, spaceBottomClass }) => {
     fetchAbout().then((res) => {
       setAbout(res);
     });
-  })
+  },[])
   return (
     <div className={clsx("welcome-area", spaceTopClass, spaceBottomClass)}>
       <div className="container">
