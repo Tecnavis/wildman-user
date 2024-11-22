@@ -20,13 +20,14 @@ import clsx from "clsx";
 import SectionTitle from "../../components/section-title/SectionTitle";
 
 const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
-  const { id } = useParams(); 
-  const [product, setProduct] = useState(null); 
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [userRating, setUserRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewImage, setReviewImage] = useState(null);
+  const [loading, setLoading] = useState(true);
   // Helper function to shuffle the array
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -34,6 +35,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
   // Fetch and display random 6 products
   useEffect(() => {
+    // fetchReviews();
     fetchProducts()
       .then((res) => {
         const shuffledProducts = shuffleArray(res);
@@ -43,6 +45,29 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         console.log("Error fetching products:", err);
       });
   }, []);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [product]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(`${URL}/review/${product._id}`);
+      const data = await response.json();
+      if (data.success && Array.isArray(data.reviews)) {
+        setReviews(data.reviews);
+      } else {
+        // If data.reviews is not an array, initialize it as an empty array
+        setReviews([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      setReviews([]); // Initialize as empty array on error
+      setLoading(false);
+    }
+  };
+
   //add to recently viewed
   const addToRecentlyViewed = (product) => {
     let recentlyViewed =
@@ -54,7 +79,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       localStorage.setItem("recentlyViewed", JSON.stringify(recentlyViewed));
     }
   };
-// Fetch product details
+  // Fetch product details
   useEffect(() => {
     const getProductDetails = async () => {
       try {
@@ -182,10 +207,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       console.log("Error adding to cart", error);
     }
   };
- //submit review
+  //submit review
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    
+
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
       Swal.fire({
@@ -217,11 +242,16 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
           title: "Review Submitted",
           text: "Thank you for your review!",
         });
-        
-        // Refresh reviews
-        const updatedReviews = await fetch(`${URL}/review/${id}`);
-        const data = await updatedReviews.json();
-        setReviews(data);
+
+        // Fetch updated reviews
+        const updatedReviewsResponse = await fetch(`${URL}/review/${id}`);
+        const updatedData = await updatedReviewsResponse.json();
+
+        if (updatedData.success && Array.isArray(updatedData.reviews)) {
+          setReviews(updatedData.reviews);
+        } else {
+          setReviews([]);
+        }
 
         // Reset form
         setUserRating(0);
@@ -237,6 +267,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
     }
   };
+
   const renderStars = (rating) => {
     return [...Array(5)].map((_, index) => (
       <i
@@ -557,7 +588,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="productReviews">Reviews(2)</Nav.Link>
+                    <Nav.Link eventKey="productReviews">Reviews({reviews.length})</Nav.Link>
                   </Nav.Item>
                 </Nav>
                 <Tab.Content className="description-review-bottom">
@@ -633,99 +664,121 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <p className="des">
                       Vestibulum ante ipsum primis aucibus orci luctustrices
                       posuere cubilia Curae Suspendisse viverra ed viverra.
-                      Mauris ullarper euismod vehicula. 
+                      Mauris ullarper euismod vehicula.
                     </p>
                   </Tab.Pane>
                   <Tab.Pane eventKey="productReviews">
-      <div className="row">
-        <div className="col-lg-7">
-          <div className="review-wrapper">
-              <p>No reviews yet. Be the first to review this product!</p>
-          
-                <div className="single-review" >
-                  <div className="review-img">
-                      <img
-                        src={process.env.PUBLIC_URL + "/assets/img/testimonial/default.jpg"}
-                        alt="Default"
-                      />
-                  </div>
-                  <div className="review-content">
-                    <div className="review-top-wrap">
-                      <div className="review-left">
-                        <div className="review-name">
-                          <h4>customer Name</h4>
+                    <div className="row">
+                      <div className="col-lg-7">
+                        <div className="review-wrapper">
+                          {loading ? (
+                            <p>Loading reviews...</p>
+                          ) : reviews.length === 0 ? (
+                            <p>
+                              No reviews yet. Be the first to review this
+                              product!
+                            </p>
+                          ) : (
+                            reviews.map((review) => (
+                              <div className="single-review" key={review._id}>
+                                <div className="review-img">
+                                  {review.image && (
+                                    <img
+                                      src={`${URL}/images/${review.image}`}
+                                      alt="Review"
+                                      className="img-fluid"
+                                    />
+                                  )}
+                                </div>
+
+                                <div className="review-content">
+                                  <div className="review-top-wrap">
+                                    <div className="review-left">
+                                      <div className="review-name">
+                                        <h4>{review.customerId.name}</h4>
+                                      </div>
+                                      <div className="review-rating">
+                                        {renderStars(review.rating)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="review-bottom">
+                                    <p>{review.review}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
                         </div>
-                        <div className="review-rating">
-                          {renderStars(4)}
+                      </div>
+                      <div className="col-lg-5">
+                        <div className="ratting-form-wrapper pl-50">
+                          <h3>Add a Review</h3>
+                          <div className="ratting-form">
+                            <form onSubmit={handleReviewSubmit}>
+                              <div className="star-box">
+                                <span>Your rating:</span>
+                                <div className="ratting-star">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <i
+                                      key={star}
+                                      className={`fa fa-star${
+                                        star <= userRating ? "" : "-o"
+                                      }`}
+                                      onClick={() => setUserRating(star)}
+                                      style={{
+                                        cursor: "pointer",
+                                        color:
+                                          star <= userRating
+                                            ? "#ffa900"
+                                            : "#d3ced2",
+                                      }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-md-12">
+                                  <div className="rating-form-style mb-10">
+                                    <textarea
+                                      placeholder="Your Review"
+                                      value={reviewText}
+                                      onChange={(e) =>
+                                        setReviewText(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div className="rating-form-style mb-10">
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) =>
+                                        setReviewImage(e.target.files[0])
+                                      }
+                                    />
+                                  </div>
+                                  <button
+                                    type="submit"
+                                    className="button"
+                                    style={{
+                                      backgroundColor: "black",
+                                      color: "white",
+                                      border: "none",
+                                      padding: "10px 20px",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    Submit Review
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="review-bottom">
-                      <p>Review</p>
-                    </div>
-                  </div>
-                </div>
-          </div>
-        </div>
-        <div className="col-lg-5">
-          <div className="ratting-form-wrapper pl-50">
-            <h3>Add a Review</h3>
-            <div className="ratting-form">
-              <form onSubmit={handleReviewSubmit}>
-                <div className="star-box">
-                  <span>Your rating:</span>
-                  <div className="ratting-star">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <i
-                        key={star}
-                        className={`fa fa-star${star <= userRating ? "" : "-o"}`}
-                        onClick={() => setUserRating(star)}
-                        style={{ 
-                          cursor: "pointer",
-                          color: star <= userRating ? "#ffa900" : "#d3ced2"
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="rating-form-style mb-10">
-                      <textarea
-                        placeholder="Your Review"
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="rating-form-style mb-10">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setReviewImage(e.target.files[0])}
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="button"
-                      style={{
-                        backgroundColor: "black",
-                        color: "white",
-                        border: "none",
-                        padding: "10px 20px",
-                        cursor: "pointer"
-                      }}
-                    >
-                      Submit Review
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Tab.Pane>
+                  </Tab.Pane>
                 </Tab.Content>
               </Tab.Container>
             </div>
@@ -781,7 +834,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         </div>
 
         <br />
-
       </LayoutOne>
     </Fragment>
   );
