@@ -12,7 +12,7 @@ const Product = () => {
     <>
       <SEO
         titleTemplate="Product Pagesss"
-        description="Product Page of flone react minimalist eCommerce template."
+        description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shoppings."
       />
 
      

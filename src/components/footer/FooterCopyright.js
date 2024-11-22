@@ -39,11 +39,11 @@ const FooterCopyright = ({ footerLogo, spaceBottomClass, colorClass }) => {
       <p>
         &copy; {new Date().getFullYear()}{" "}
         <a
-          href="https://hasthemes.com"
+          href=""
           rel="noopener noreferrer"
           target="_blank"
         >
-          Flone
+          Wildman Premium
         </a>
         .<br /> All Rights Reserved
       </p>

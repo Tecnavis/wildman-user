@@ -52,7 +52,7 @@ const Contact = () => {
     <Fragment>
       <SEO
         titleTemplate="Contact"
-        description="Contact page of flone react minimalist eCommerce template."
+        description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping"
       />
       <LayoutOne headerTop="visible">
         <Breadcrumb 

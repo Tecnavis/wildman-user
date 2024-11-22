@@ -22,9 +22,9 @@ SEO.propTypes = {
 }
 
 SEO.defaultProps = {
-    title: "Flone",
+    title: "Wildman Premium",
     titleTemplate: "Product Page",
-    description: "Product page of flone react minimalist eCommerce template.",
+    description: "Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping",
 };
 
 export default SEO;

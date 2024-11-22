@@ -11,7 +11,7 @@ const NotFound = () => {
     <Fragment>
       <SEO
         titleTemplate="Not Found"
-        description="404 of flone react minimalist eCommerce template."
+        description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping"
       />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}

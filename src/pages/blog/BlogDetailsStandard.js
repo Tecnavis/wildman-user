@@ -13,8 +13,8 @@ const BlogDetailsStandard = () => {
   return (
     <Fragment>
       <SEO
-        titleTemplate="Blog Post"
-        description="Blog Post of flone react minimalist eCommerce template."
+        titleTemplate="Wildman Premium - Your One-Stop Online Shopping Platform for Quality Products"
+        description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping."
       />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}

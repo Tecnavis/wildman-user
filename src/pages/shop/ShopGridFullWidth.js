@@ -51,7 +51,7 @@ const ShopGridFullWidth = ({location}) => {
         <Fragment>
             <SEO
                 titleTemplate="Shop Page"
-                description="Shop page of flone react minimalist eCommerce template."
+                description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping.s"
             />
 
             <LayoutOne headerTop="visible">

@@ -99,7 +99,7 @@ const LoginRegister = () => {
     <Fragment>
       <SEO
         titleTemplate="Login"
-        description="Login page of flone react minimalist eCommerce template."
+        description="Wildman Premium - Your Ultimate Destination for Premium E-Commerce Shopping"
       />
       <LayoutOne headerTop="visible">
         <Breadcrumb 
