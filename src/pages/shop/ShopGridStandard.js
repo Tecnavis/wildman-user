@@ -1,5 +1,3 @@
-import ShopSidebar from "../../wrappers/product/ShopSidebar";
-
 import { Fragment, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Paginator from "react-hooks-paginator";
@@ -9,6 +7,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import ShopTopbarFilter from "../../wrappers/product/ShopTopbarFilter";
 import ShopProducts from "../../wrappers/product/ShopProducts";
+import ShopSidebar from "../../wrappers/product/ShopSidebar";
 import { fetchProducts } from "../../helpers/handle_api";
 
 const ShopGridFilter = () => {
@@ -22,6 +21,10 @@ const ShopGridFilter = () => {
   const [currentData, setCurrentData] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
+  
+  // New state for filtering
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
 
   const pageLimit = 8; 
   const { pathname } = useLocation();
@@ -46,11 +49,52 @@ const ShopGridFilter = () => {
     setFilterSortValue(sortValue);
   };
 
+  // New function to handle category selection
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    setOffset(0);
+  };
+
+  // New function to handle color selection
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    setCurrentPage(1);
+    setOffset(0);
+  };
+
+  // New function to reset all filters
+  const handleResetFilters = () => {
+    setSelectedCategory(null);
+    setSelectedColor(null);
+    setCurrentPage(1);
+    setOffset(0);
+  };
+
   useEffect(() => {
-    let sorted = getSortedProducts(allProducts, sortType, sortValue);
+    // Apply filtering logic
+    let filtered = allProducts;
+
+    // Filter by category
+    if (selectedCategory && selectedCategory !== 'All Categories') {
+      filtered = filtered.filter(product => 
+        product.mainCategory === selectedCategory
+      );
+    }
+
+    // Filter by color
+    if (selectedColor && selectedColor !== 'All Colors') {
+      filtered = filtered.filter(product => 
+        product.color === selectedColor
+      );
+    }
+
+    // Apply sorting
+    let sorted = getSortedProducts(filtered, sortType, sortValue);
     sorted = getSortedProducts(sorted, filterSortType, filterSortValue);
+    
     setSortedProducts(sorted);
-  }, [allProducts, sortType, sortValue, filterSortType, filterSortValue]);
+  }, [allProducts, selectedCategory, selectedColor, sortType, sortValue, filterSortType, filterSortValue]);
 
   useEffect(() => {
     setCurrentData(sortedProducts.slice(offset, offset + pageLimit));
@@ -72,11 +116,13 @@ const ShopGridFilter = () => {
           <div className="container">
             <div className="row">
               <div className="col-lg-3 order-2 order-lg-1">
-                {/* shop sidebar */}
-                <ShopSidebar
-                  allProducts={allProducts}
-                  getSortParams={getSortParams}
-                  sideSpaceClass="mr-30"
+                {/* shop sidebar with filter props */}
+                <ShopSidebar 
+                  onCategorySelect={handleCategorySelect}
+                  onColorSelect={handleColorSelect}
+                  onResetFilters={handleResetFilters}
+                  selectedCategory={selectedCategory}
+                  selectedColor={selectedColor}
                 />
               </div>
               <div className="col-lg-9 order-1 order-lg-2">
