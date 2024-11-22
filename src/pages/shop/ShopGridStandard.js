@@ -23,7 +23,7 @@ const ShopGridFilter = () => {
   const [sortedProducts, setSortedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
 
-  const pageLimit = 9; 
+  const pageLimit = 8; 
   const { pathname } = useLocation();
 
   useEffect(() => {

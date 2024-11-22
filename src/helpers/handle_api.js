@@ -7,6 +7,11 @@ import Swal from 'sweetalert2';
 
 export const  URL = `http://localhost:3000`;
 // export const  URL = `https://api.wildman.tecnavis.com`;
+//fetch about
+export const fetchAbout = async () => {
+  const response = await axios.get(`${URL}/about`);
+  return response.data;
+}
 
 //fetch order product by customerId
 export const fetchOrderProducts = async (customerId) => {

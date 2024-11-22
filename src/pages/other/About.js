@@ -38,16 +38,14 @@ const About = () => {
         <TextGridOne spaceBottomClass="pb-70" />
 
         {/* fun fact */}
-        <FunFactOne
+        {/* <FunFactOne
           spaceTopClass="pt-100"
           spaceBottomClass="pb-70"
           bgClass="bg-gray-3"
-        />
+        /> */}
 
         {/* team member */}
         <TeamMemberOne spaceTopClass="pt-95" spaceBottomClass="pb-70" />
-
-        {/* brand logo slider */}
         <BrandLogoSliderOne spaceBottomClass="pb-70" />
       </LayoutOne>
     </Fragment>
