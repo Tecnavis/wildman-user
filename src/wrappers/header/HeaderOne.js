@@ -7,6 +7,7 @@ import IconGroup from "../../components/header/IconGroup";
 import MobileMenu from "../../components/header/MobileMenu";
 import HeaderTop from "../../components/header/HeaderTop";
 import { URL, fetchLogo } from "../../helpers/handle_api";
+// import {img1} from "../../../public/assets/logo.png";
 
 const HeaderOne = ({
   layout,
@@ -77,7 +78,10 @@ const HeaderOne = ({
               {/* Header logo */}
               {logo && (
                 <img
-                  src={`${URL}/images/${logo.image}`}
+                src={
+                  process.env.PUBLIC_URL +
+                  "/assets/logo.png"
+                }
                   alt="Logo"
                   className="logo"
                   style={{ width: "75px",  }}

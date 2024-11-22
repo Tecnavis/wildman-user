@@ -25,7 +25,10 @@ const FooterCopyright = ({ footerLogo, spaceBottomClass, colorClass }) => {
         <Link to={process.env.PUBLIC_URL + "/"}>
         {logo && (
                 <img
-                  src={`${URL}/images/${logo.image}`}
+                src={
+                  process.env.PUBLIC_URL +
+                  "/assets/logo.png"
+                }
                   alt="Logo"
                   className="logo"
                   style={{ width: "75px",  }}
