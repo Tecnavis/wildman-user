@@ -33,12 +33,7 @@ const ShopCategories = ({ getSortParams }) => {
               return (
                 <li key={key}>
                   <div className="sidebar-widget-list-left">
-                    <button
-                      // onClick={(e) => {
-                      //   getSortParams("category", category.name);
-                      //   setActiveSort(e);
-                      // }}
-                    >
+                    <button>
                       <span className="checkmark" /> {category.name}
                     </button>
                   </div>
