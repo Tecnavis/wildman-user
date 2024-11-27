@@ -412,7 +412,7 @@ const Checkout = () => {
                               $
                               {cartItems
                                 .reduce(
-                                  (acc, item) => acc + item.sizeDetails.total,
+                                  (acc, item) => acc + item.totalAmount,
                                   0
                                 )
                                 .toFixed(2)}

@@ -72,12 +72,12 @@ const Cart = () => {
     }
   };
   //calculate total amount
-  const calculateTotalPrice = () => {
-    return customerCart.reduce((total, item) => {
-      return total + (item.price || item.productId.price) * item.quantity;
-    }, 0);
-  };
-  const totalAmount = calculateTotalPrice();
+  // const calculateTotalPrice = () => {
+  //   return customerCart.reduce((total, item) => {
+  //     return total + (item.price || item.productId.price) * item.quantity;
+  //   }, 0);
+  // };
+  
 
    //  calculate total quantity of purchased items
 const calculateTotalQuantity = () => {
@@ -123,7 +123,7 @@ const handleConfirmOrder = () => {
         sizeId: item._id,
         size: selectedSizes[item._id] || item.size, 
         quantity: item.quantity,
-        total: (item.price || item.productId.price) * item.quantity,
+        total: (item.price || item.productId.price) * item.quantity||0,
         discount: item.discount||item.productId.discount,
       },
       totalQuantity,
@@ -139,7 +139,14 @@ const handleConfirmOrder = () => {
 };
 
 const isConfirmOrderDisabled = calculateTotalQuantity === 0;
-const checkoutDetails = JSON.parse(localStorage.getItem("checkoutDetails"))?.[0] || {};
+const checkoutDetails = JSON.parse(localStorage.getItem("checkoutDetails"))?.[0] || {
+  totalQuantity: 0,
+  totalAmount: 0,
+  sizeDetails: {
+    total: 0,
+    discount: 0
+  }
+};
 
 const handleProceedToCheckout = () => {
   const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -166,6 +173,27 @@ const handleSizeSelect = (productId, size) => {
     [productId]: size,
   }));
 };
+
+const calculateTotalPrice = () => {
+  return customerCart.reduce((total, item) => {
+    const price = item.price || item.productId.price;
+    const discount = item.discount || item.productId.discount || 0;
+    const discountedPrice = price * (1 - discount / 100);
+    return total + discountedPrice * item.quantity;
+  }, 0);
+};
+
+const calculateTotalDiscount = () => {
+  return customerCart.reduce((totalDiscount, item) => {
+    const price = item.price || item.productId.price;
+    const discount = item.discount || item.productId.discount || 0;
+    const discountAmount = price * (discount / 100) * item.quantity;
+    return totalDiscount + discountAmount;
+  }, 0);
+};
+
+const totalAmount = calculateTotalPrice();
+const totalDiscount = calculateTotalDiscount();
   return (
     <Fragment>
       <SEO
@@ -349,34 +377,31 @@ const handleSizeSelect = (productId, size) => {
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-12">
-                    <div className="grand-totall">
-                      <div className="title-wrap">
-                        <h4 className="cart-bottom-title section-bg-gary-cart">
-                          Cart Total
-                        </h4>
-                      </div>
-                      <h5 className="sub-total">
-                        Total products{" "}
-                        <span>{checkoutDetails.totalQuantity || 0}</span>
-                      </h5>
-                      <h5 className="sub-total">
-                        Total Amount{" "}
-                        <span>${checkoutDetails.totalAmount || 0}.00</span>
-                      </h5>
-                      <h5 className="sub-total">
-                        Discount <span>${checkoutDetails.sizeDetails.discount || 0}.00</span>
-                      </h5>
-                      <h4 className="grand-totall-title">
-                        Grand Total{" "}
-                        <span>${checkoutDetails.totalAmount || 0}.00</span>
-                      </h4>
-                      <button
-                        className="checkoutbtn"
-                        onClick={handleProceedToCheckout}
-                      >
-                        Proceed to Checkout
-                      </button>
-                    </div>
+                  <div className="grand-totall">
+  <div className="title-wrap">
+    <h4 className="cart-bottom-title section-bg-gary-cart">
+      Cart Total
+    </h4>
+  </div>
+  <h5 className="sub-total">
+    Total products <span>{checkoutDetails.totalQuantity}</span>
+  </h5>
+  <h5 className="sub-total">
+    Total Amount <span>${checkoutDetails.sizeDetails.total ||0}</span>
+  </h5>
+  <h5 className="sub-total">
+    Total Discount <span>${totalDiscount.toFixed(2)} ({((totalDiscount / (totalAmount + totalDiscount) ||0) * 100).toFixed(2) }%)</span>
+  </h5>
+  <h4 className="grand-totall-title">
+    Grand Total <span>${(checkoutDetails.totalAmount || 0).toFixed(2)}</span>
+  </h4>
+  <button
+    className="checkoutbtn"
+    onClick={handleProceedToCheckout}
+  >
+    Proceed to Checkout
+  </button>
+</div>
                   </div>
                 </div>
               </Fragment>
