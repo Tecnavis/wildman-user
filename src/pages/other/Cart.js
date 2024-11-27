@@ -124,6 +124,7 @@ const handleConfirmOrder = () => {
         size: selectedSizes[item._id] || item.size, 
         quantity: item.quantity,
         total: (item.price || item.productId.price) * item.quantity,
+        discount: item.discount||item.productId.discount,
       },
       totalQuantity,
       totalAmount,
@@ -363,11 +364,11 @@ const handleSizeSelect = (productId, size) => {
                         <span>${checkoutDetails.totalAmount || 0}.00</span>
                       </h5>
                       <h5 className="sub-total">
-                        Discount <span>${5}.00</span>
+                        Discount <span>${checkoutDetails.sizeDetails.discount || 0}.00</span>
                       </h5>
                       <h4 className="grand-totall-title">
                         Grand Total{" "}
-                        <span>${checkoutDetails.totalAmount - 5 || 0}.00</span>
+                        <span>${checkoutDetails.totalAmount || 0}.00</span>
                       </h4>
                       <button
                         className="checkoutbtn"
