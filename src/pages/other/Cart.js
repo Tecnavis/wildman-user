@@ -95,6 +95,18 @@ const handleConfirmOrder = () => {
     });
     return;
   }
+  // Check if all items with non-zero quantity have a size selected
+  const missingSizes = customerCart
+    .filter((item) => item.quantity > 0 && !selectedSizes[item._id]);
+
+  if (missingSizes.length > 0) {
+    Swal.fire({
+      icon: "error",
+      title: "Size Selection Required",
+      text: "Please select a size for all items before confirming the order.",
+    });
+    return;
+  }
   const checkoutDetails = customerCart
     .filter((item) => item.quantity > 0) 
     .map((item) => ({
