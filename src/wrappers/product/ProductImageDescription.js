@@ -518,7 +518,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                         Brand: {product.brand} <br />
                       </span>
                     )}
-                    {product.height && (
+                    {/* {product.height && (
                       <span>
                         Height: {product.height} <br />
                       </span>
@@ -527,10 +527,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       <span>
                         Weight: {product.weight} <br />
                       </span>
-                    )}
+                    )} */}
                     {product.length && (
                       <span>
-                        Dimension: {product.length} <br />
+                        Dimension:(L) {product.length} ,(H) {product.height}, (W) {product.weight} <br />
                       </span>
                     )}
                     {product.date && (
@@ -701,9 +701,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <p className="des">{product.description}</p>
                     <br />
                     <p className="des">
-                      Vestibulum ante ipsum primis aucibus orci luctustrices
-                      posuere cubilia Curae Suspendisse viverra ed viverra.
-                      Mauris ullarper euismod vehicula.
+                     {product.about}
                     </p>
                   </Tab.Pane>
                   <Tab.Pane eventKey="productReviews">
