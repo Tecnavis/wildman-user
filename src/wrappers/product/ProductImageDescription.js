@@ -9,6 +9,7 @@ import {
   fetchWishlist,
   URL,
 } from "../../helpers/handle_api";
+import { Carousel } from 'react-bootstrap';
 import ProductRating from "../../components/product/sub-components/ProductRating";
 import Swiper, { SwiperSlide } from "../../components/swiper";
 import LayoutOne from "../../layouts/LayoutOne";
@@ -319,21 +320,30 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     </SwiperSlide>
                   </Swiper>
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="product-images-wrapper d-flex flex-wrap justify-content-start">
-                        {product.images.map((img, idx) => (
-                          <div className="single-image col-6 p-2" key={idx}>
-                            <img
-                              src={`${URL}/images/${img}`}
-                              className="img-fluid"
-                              alt={`product-image-${idx}`}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                   <div className="row mt-3">
+          <div className="col-12">
+            <Carousel 
+              indicators={true}
+              controls={true}
+              interval={3000} // Change image every 3 seconds
+              pause="hover"
+            >
+              {product.images.map((img, idx) => (
+                <Carousel.Item key={idx}>
+                  <img
+                    className="d-block w-100"
+                    src={`${URL}/images/${img}`}
+                    alt={`Product image ${idx + 1}`}
+                    style={{ 
+                      maxHeight: '400px', 
+                      objectFit: 'contain' 
+                    }}
+                  />
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </div>
+        </div>
                 </div>
               </div>
               <div className="col-lg-6 col-md-6">
