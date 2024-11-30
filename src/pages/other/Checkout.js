@@ -232,7 +232,7 @@ const Checkout = () => {
                   <div className="billing-info-wrap">
                     <h3>Billing Details</h3>
                     <div className="row">
-                      <div className="col-lg-12 col-md-6">
+                      <div className="col-lg-12 col-md-12">
                         <div className="billing-info mb-20">
                           <label>First Name</label>
                           <input
