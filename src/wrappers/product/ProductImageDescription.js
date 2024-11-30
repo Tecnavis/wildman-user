@@ -28,6 +28,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const [reviewText, setReviewText] = useState("");
   const [reviewImage, setReviewImage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+
   // Helper function to shuffle the array
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -153,6 +155,16 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   };
 
   //add to cart
+
+  const decrementQuantity = () => {
+    setQuantity(prevQuantity => Math.max(1, prevQuantity - 1));
+  };
+
+  const incrementQuantity = () => {
+    setQuantity(prevQuantity => prevQuantity + 1);
+  };
+
+  // Modify the existing add to cart function to include quantity
   const handleAddToCart = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
@@ -399,15 +411,15 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
                   <div className="pro-details-quality">
                     <div className="cart-plus-minus">
-                      <button className="dec qtybutton">-</button>
-                      <input
-                        className="cart-plus-minus-box"
-                        type="text"
-                        value={1}
-                        readOnly
-                      />
-                      <button className="inc qtybutton">+</button>
-                    </div>
+                    <button className="dec qtybutton" onClick={decrementQuantity}>-</button>
+        <input
+          className="cart-plus-minus-box"
+          type="text"
+          value={quantity}
+          readOnly
+        />
+        <button className="inc qtybutton" onClick={incrementQuantity}>+</button>
+      </div>
                     <div className="pro-details-cart btn-hover">
                       <button onClick={() => handleAddToCart(product)}>
                         {" "}
@@ -504,6 +516,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     {product.weight && (
                       <span>
                         Weight: {product.weight} <br />
+                      </span>
+                    )}
+                    {product.length && (
+                      <span>
+                        Dimension: {product.length} <br />
                       </span>
                     )}
                     {product.date && (
@@ -620,6 +637,20 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                           {product.height && (
                             <span>
                               Height: {product.height} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li className="product-anotherinfo-list">
+                          {product.length && (
+                            <span>
+                              Dimension: {product.length} <br />
+                            </span>
+                          )}
+                        </li>
+                        <li>
+                          {product.width && (
+                            <span>
+                              Width: {product.width} <br />
                             </span>
                           )}
                         </li>
