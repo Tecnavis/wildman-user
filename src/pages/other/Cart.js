@@ -308,7 +308,7 @@ const totalDiscount = calculateTotalDiscount();
                               </td>
                               <td className="product-price-cart">
                                 <span className="amount">
-                                  RS.{" "}
+                                ₹.{" "}
                                   {item.price
                                     ? (
                                         item.price *
@@ -345,7 +345,7 @@ const totalDiscount = calculateTotalDiscount();
                                 </div>
                               </td>
                               <td className="product-subtotal">
-                                $
+                              ₹
                                 {(item.price || item.productId.price) *
                                   item.quantity}
                               </td>
@@ -413,16 +413,16 @@ const totalDiscount = calculateTotalDiscount();
     Total products <span>{checkoutDetailss.totalQuantity}</span>
   </h5>
   <h5 className="sub-total">
-    Total Amount <span>${checkoutDetailss.sizeDetails.total.toFixed(2) || 0}</span>
+    Total Amount <span>₹{checkoutDetailss.sizeDetails.total.toFixed(2) || 0}</span>
   </h5>
   <h5 className="sub-total">
     Total Discount <span>
-      ${totalDiscount.toFixed(2)} (
+    ₹{totalDiscount.toFixed(2)} (
       {((totalDiscount / (totalAmount + totalDiscount) || 0) * 100).toFixed(2)}%)
     </span>
   </h5>
   <h4 className="grand-totall-title">
-    Grand Total <span>${checkoutDetailss.totalAmount.toFixed(2) || 0}</span>
+    Grand Total <span>₹{checkoutDetailss.totalAmount.toFixed(2) || 0}</span>
   </h4>
   <button
     className="checkoutbtn"

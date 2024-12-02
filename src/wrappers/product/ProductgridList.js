@@ -134,7 +134,7 @@ const ProductGridList = () => {
                 </div>
                 <div className="product-price">
                   <Fragment>
-                    <span>${item.price}</span> <span className="old">$1900</span>
+                    <span>₹{item.price}</span> 
                   </Fragment>
                 </div>
               </div>

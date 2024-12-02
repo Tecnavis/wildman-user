@@ -28,7 +28,7 @@ const BlogFeaturedSingle = () => {
             <div className="blog-content-wrap">
               <div className="blog-content text-center">
                 <h3>
-                  <Link to={`/product/${product.id}`}>{product.subCategory} - ${product.price}</Link>
+                  <Link to={`/product/${product.id}`}>{product.subCategory} - ₹{product.price}</Link>
                 </h3>
                 <span> {product.title}</span>
               </div>

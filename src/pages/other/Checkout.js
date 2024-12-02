@@ -20,7 +20,7 @@ const Checkout = () => {
   const selectedProduct = JSON.parse(
     localStorage.getItem("checkoutDetails")
   ) || { selectedProducts: [], totalAmount: 0, totalQuantity: 0 };
-  const GIFT_WRAP_PRICE = 10; // Gift wrapping price
+  const GIFT_WRAP_PRICE = 30; // Gift wrapping price
   const [values, handleChange, setValues] = useForm({
     customerName: "",
     address: "",
@@ -316,7 +316,7 @@ const Checkout = () => {
                         onChange={() => setIsGiftWrapping(!isGiftWrapping)}
                       />
                       <label>
-                        Gift wrapping available (+${GIFT_WRAP_PRICE})
+                        Gift wrapping available (+ ₹{GIFT_WRAP_PRICE})
                       </label>
                     </div>
 
@@ -412,7 +412,7 @@ const Checkout = () => {
                                   {item.sizeDetails.quantity}
                                 </span>{" "}
                                 <span className="order-price">
-                                  ${item.sizeDetails.total.toFixed(2)}
+                                ₹{item.sizeDetails.total.toFixed(2)}
                                 </span>
                               </li>
                             ))}
@@ -424,7 +424,7 @@ const Checkout = () => {
                               <p>Sub Total</p>
                             </li>
                             <li>
-                              $
+                            ₹
                               {cartItems
                                 .reduce(
                                   (acc, item) => acc + item.totalAmount,
@@ -444,14 +444,14 @@ const Checkout = () => {
                             <li className="your-order-shipping">
                               <p>Gift Wrapping</p>
                             </li>
-                            <li>${isGiftWrapping ? GIFT_WRAP_PRICE : 0}</li>
+                            <li>₹{isGiftWrapping ? GIFT_WRAP_PRICE : 0}</li>
                           </ul>
                           <ul>
                             <li className="your-order-shipping">
                               <p>GST</p>
                             </li>
                             <li>
-                              $
+                            ₹
                               {cartItems
                                 .reduce(
                                   (acc, item) => acc + item.productDetails.gst,
@@ -465,7 +465,7 @@ const Checkout = () => {
                           <ul>
                             <li className="order-total">Total</li>
                             <li>
-                              $
+                            ₹
                               {(
                                 cartItems.reduce(
                                   (acc, item) => acc + item.totalAmount,

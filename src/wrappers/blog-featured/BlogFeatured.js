@@ -39,7 +39,7 @@ const BlogFeatured = ({ spaceTopClass, spaceBottomClass }) => {
                     <div className="blog-content text-center">
                       <h3>
                         <Link to={`/productview/${product._id}`}>
-                          {product.subCategory} - ${product.price}
+                          {product.subCategory} - ₹{product.price}
                         </Link>
                       </h3>
                       <span>{product.title}</span>

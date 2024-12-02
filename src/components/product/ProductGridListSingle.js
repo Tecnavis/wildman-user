@@ -60,9 +60,9 @@ const ProductGridListSingle = () => {
               </div>
             <div className="product-price">
                 <Fragment>
-                  <span>$1200</span>{" "}
+                  <span>₹1200</span>{" "}
                   <span className="old">
-                    $1900
+                  ₹1900
                   </span>
                 </Fragment>
             </div>

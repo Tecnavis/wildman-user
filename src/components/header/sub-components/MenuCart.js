@@ -68,7 +68,7 @@ const handleDeleteCustomer = (productId) => {
                     </h4>
                     <h6>Qty: 1</h6>
                     <span>
-                      ${item.price || item.productId.price}
+                    ₹{item.price || item.productId.price}
                     </span>
                       <div className="cart-item-variation">
                         <span>Color: {item.color || item.productId.color}</span>

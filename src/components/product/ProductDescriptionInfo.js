@@ -8,7 +8,7 @@ const ProductDescriptionInfo = () => {
     <div className="product-details-content ml-70">
       <h2>product name</h2>
       <div className="product-details-price">
-        <span>$500 </span>
+        <span>₹500 </span>
       </div>
       <div className="pro-details-rating-wrap">
         <div className="pro-details-rating">

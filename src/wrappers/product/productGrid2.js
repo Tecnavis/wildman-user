@@ -295,7 +295,7 @@ const ProductGridSingle = () => {
             <div className="product-content text-center">
               <a className="des">{data.description}</a>
               <div className="product-price">
-                <span>$1000.00</span>
+                <span>₹{data.price}.00</span>
               </div>
               <h5 className="des"> 
                 <Link to={`/productview/${data._id}`}>{data.title}</Link>

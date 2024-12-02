@@ -100,7 +100,7 @@ const ProductGridSingle = ({
             ""
           )}
           <div className="product-price">
-              <span>$1000 </span>
+              <span>₹1000 </span>
           </div>
         </div>
       </div>
