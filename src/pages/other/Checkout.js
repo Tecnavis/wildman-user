@@ -27,7 +27,7 @@ const Checkout = () => {
     phone: "",
     email: "",
     Pincode: "",
-    totalAmount: TotalAmount || 0,
+    totalAmount: TotalAmount + (isGiftWrapping ? GIFT_WRAP_PRICE : 0),
     deliveryStatus: "Pending",
     orderDate: new Date(),
     deliveryDate: "",
@@ -141,7 +141,7 @@ const Checkout = () => {
     }
 
     const orderResponse = await axios.post(`${URL}/razorpay`, {
-      amount: values.totalAmount * 100,
+      amount: values.totalAmount * 100 + (isGiftWrapping ? GIFT_WRAP_PRICE * 100 : 0),
       currency: "INR",
     });
 
@@ -414,10 +414,33 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-bottom">
-                          <ul>
-                            <li className="your-order-shipping">Shipping</li>
+                          <ul style={{marginBottom: "10px"}}>
+                          <li className="your-order-shipping"><p>Sub Total</p></li>
+                            <li>
+                              $
+                              {(cartItems.reduce((acc, item) => acc + item.totalAmount, 0))
+              .toFixed(2)}
+                            </li>
+                          </ul>
+                          <ul style={{marginBottom: "10px"}}>
+                            
+                            <li className="your-order-shipping"><p>Shipping</p></li>
                             <li>Free shipping</li>
                           </ul>
+
+                          <ul>
+                            <li className="your-order-shipping"><p>Gift Wrapping</p></li>
+                            <li>
+                              ${isGiftWrapping ? GIFT_WRAP_PRICE : 0}
+                            </li>
+                          </ul>
+                          <ul>
+                            <li className="your-order-shipping"><p>GST</p></li>
+                            <li>
+                              ${cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0) .toFixed(2)}
+                            </li>
+                          </ul>
+
                         </div>
                         <div className="your-order-total">
                           <ul>
@@ -425,7 +448,8 @@ const Checkout = () => {
                             <li>
                               $
                               {(cartItems.reduce((acc, item) => acc + item.totalAmount, 0) + 
-              (isGiftWrapping ? GIFT_WRAP_PRICE : 0))
+              (isGiftWrapping ? GIFT_WRAP_PRICE : 0)+
+              cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0))
               .toFixed(2)}
                             </li>
                           </ul>
