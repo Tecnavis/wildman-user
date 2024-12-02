@@ -12,6 +12,7 @@ import "./style.scss";
 const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [isGiftWrapping, setIsGiftWrapping] = useState(false);
+  const [giftMessage, setGiftMessage] = useState(""); 
   const cartItems = JSON.parse(localStorage.getItem("checkoutDetails")) || [];
   const TotalAmount = cartItems.length > 0 ? cartItems[0].totalAmount : 0;
  const navigate =useNavigate();
@@ -20,30 +21,6 @@ const Checkout = () => {
     localStorage.getItem("checkoutDetails")
   ) || { selectedProducts: [], totalAmount: 0, totalQuantity: 0 };
   const GIFT_WRAP_PRICE = 10; // Gift wrapping price
-
-  // Check if selectedProduct and selectedProducts array are defined and contain items
-  const filteredProducts =
-    Array.isArray(selectedProduct.selectedProducts) &&
-    selectedProduct.selectedProducts.length > 0
-      ? selectedProduct.selectedProducts.map((product) => ({
-          productDetails: {
-            id: product.productDetails?.id || "",
-            mainCategory: product.productDetails?.mainCategory || "",
-            subCategory: product.productDetails?.subCategory || "",
-            color: product.productDetails?.color || "",
-            price: product.productDetails?.price || 0,
-            coverImage: product.productDetails?.coverimage || "",
-            title: product.productDetails?.title || "",
-          },
-          sizeDetails: {
-            sizeId: product.sizeDetails?.sizeId || "",
-            size: product.sizeDetails?.size || 0,
-            quantity: product.sizeDetails?.quantity || 0,
-            total: product.sizeDetails?.totalAmount || 0,
-          },
-        }))
-      : [];
-
   const [values, handleChange, setValues] = useForm({
     customerName: "",
     address: "",
@@ -92,19 +69,6 @@ const Checkout = () => {
       }));
     }
   }, [values.deliveryStatus, setValues]);
-    // Update total amount when gift wrapping is added/removed
-    useEffect(() => {
-      const baseAmount = cartItems.reduce((acc, item) => acc + item.totalAmount, 0);
-      const finalAmount = isGiftWrapping 
-        ? baseAmount + GIFT_WRAP_PRICE 
-        : baseAmount;
-  
-      setValues((prevValues) => ({
-        ...prevValues,
-        totalAmount: finalAmount,
-        gift: isGiftWrapping
-      }));
-    }, [isGiftWrapping]);
 
   const handleSubmit = async (e) => {
     
@@ -130,7 +94,14 @@ const Checkout = () => {
       await initiatePayment();
     }
     try {
-      const response = await axios.post(`${URL}/customerorder`, values);
+      // Prepare order data with explicit gift fields
+      const orderData = {
+        ...values,
+        totalAmount: TotalAmount + (isGiftWrapping ? GIFT_WRAP_PRICE : 0),
+        gift: isGiftWrapping, // Explicitly set gift status
+        giftMessage: isGiftWrapping ? giftMessage : "", // Explicitly set gift message
+      };
+      const response = await axios.post(`${URL}/customerorder`, orderData);
       
       if (response.status === 201) {
         Swal.fire({
@@ -347,9 +318,9 @@ const Checkout = () => {
           <label>Gift Message</label>
           <textarea
             placeholder="Enter your gift message (optional)"
-            name="giftMessage"
-            value={values.giftMessage}
-            onChange={handleChange}
+            value={giftMessage}
+            onChange={(e) => setGiftMessage(e.target.value)}
+            maxLength={200}
           />
         </div>
       )}
