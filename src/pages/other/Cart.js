@@ -118,6 +118,8 @@ const handleConfirmOrder = () => {
         subCategory: item.subCategory || item.productId.subCategory,
         price: item.price || item.productId.price,
         coverImage: item.coverimage || item.productId.coverimage,
+        discount: item.discount || item.productId.discount,
+        gst: item.gst || item.productId.gst
       },
       sizeDetails: {
         sizeId: item._id,

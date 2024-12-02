@@ -11,6 +11,7 @@ import "./style.scss";
 
 const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [isGiftWrapping, setIsGiftWrapping] = useState(false);
   const cartItems = JSON.parse(localStorage.getItem("checkoutDetails")) || [];
   const TotalAmount = cartItems.length > 0 ? cartItems[0].totalAmount : 0;
  const navigate =useNavigate();
@@ -18,6 +19,7 @@ const Checkout = () => {
   const selectedProduct = JSON.parse(
     localStorage.getItem("checkoutDetails")
   ) || { selectedProducts: [], totalAmount: 0, totalQuantity: 0 };
+  const GIFT_WRAP_PRICE = 10; // Gift wrapping price
 
   // Check if selectedProduct and selectedProducts array are defined and contain items
   const filteredProducts =
@@ -90,6 +92,19 @@ const Checkout = () => {
       }));
     }
   }, [values.deliveryStatus, setValues]);
+    // Update total amount when gift wrapping is added/removed
+    useEffect(() => {
+      const baseAmount = cartItems.reduce((acc, item) => acc + item.totalAmount, 0);
+      const finalAmount = isGiftWrapping 
+        ? baseAmount + GIFT_WRAP_PRICE 
+        : baseAmount;
+  
+      setValues((prevValues) => ({
+        ...prevValues,
+        totalAmount: finalAmount,
+        gift: isGiftWrapping
+      }));
+    }, [isGiftWrapping]);
 
   const handleSubmit = async (e) => {
     
@@ -314,6 +329,34 @@ const Checkout = () => {
                         />
                       </div>
                     </div>
+                    {/* gift wrapping available */}
+                    <div className="additional-info">
+        <input 
+          type="checkbox"
+          name="gift"
+          style={{width: "6%", height: "14px"}}
+          checked={isGiftWrapping}
+          onChange={() => setIsGiftWrapping(!isGiftWrapping)}
+        />
+        <label>Gift wrapping available (+${GIFT_WRAP_PRICE})</label>
+      </div>
+
+      {/* Conditional rendering of gift message input */}
+      {isGiftWrapping && (
+        <div className="gift-message-section mb-20">
+          <label>Gift Message</label>
+          <textarea
+            placeholder="Enter your gift message (optional)"
+            name="giftMessage"
+            value={values.giftMessage}
+            onChange={handleChange}
+          />
+        </div>
+      )}
+
+      {/* Modify order total section to include gift wrap price */}
+    
+
                   </div>
                 </div>
 
@@ -410,12 +453,9 @@ const Checkout = () => {
                             <li className="order-total">Total</li>
                             <li>
                               $
-                              {cartItems
-                                .reduce(
-                                  (acc, item) => acc + item.totalAmount,
-                                  0
-                                )
-                                .toFixed(2)}
+                              {(cartItems.reduce((acc, item) => acc + item.totalAmount, 0) + 
+              (isGiftWrapping ? GIFT_WRAP_PRICE : 0))
+              .toFixed(2)}
                             </li>
                           </ul>
                         </div>
