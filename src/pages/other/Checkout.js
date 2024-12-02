@@ -12,10 +12,10 @@ import "./style.scss";
 const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [isGiftWrapping, setIsGiftWrapping] = useState(false);
-  const [giftMessage, setGiftMessage] = useState(""); 
+  const [giftMessage, setGiftMessage] = useState("");
   const cartItems = JSON.parse(localStorage.getItem("checkoutDetails")) || [];
   const TotalAmount = cartItems.length > 0 ? cartItems[0].totalAmount : 0;
- const navigate =useNavigate();
+  const navigate = useNavigate();
   const customer = JSON.parse(localStorage.getItem("customerDetails")) || {};
   const selectedProduct = JSON.parse(
     localStorage.getItem("checkoutDetails")
@@ -71,20 +71,25 @@ const Checkout = () => {
   }, [values.deliveryStatus, setValues]);
 
   const handleSubmit = async (e) => {
-    
     e.preventDefault();
-    
+
     // Validation for required fields
-    const requiredFields = ["customerName", "address", "phone", "email", "Pincode"];
+    const requiredFields = [
+      "customerName",
+      "address",
+      "phone",
+      "email",
+      "Pincode",
+    ];
     const missingFields = requiredFields.filter((field) => !values[field]);
-  
+
     if (missingFields.length > 0) {
       Swal.fire({
         icon: "error",
         title: "Missing Information",
         text: "Please fill out all required billing fields before confirming.",
       });
-      return; 
+      return;
     }
     if (!selectedPaymentMethod) {
       Swal.fire("Select Payment", "Please select a payment method.", "warning");
@@ -102,7 +107,7 @@ const Checkout = () => {
         giftMessage: isGiftWrapping ? giftMessage : "", // Explicitly set gift message
       };
       const response = await axios.post(`${URL}/customerorder`, orderData);
-      
+
       if (response.status === 201) {
         Swal.fire({
           icon: "success",
@@ -110,7 +115,7 @@ const Checkout = () => {
           text: "Order created successfully.",
         });
         localStorage.removeItem("checkoutDetails");
-       navigate("/shop-grid-filter");
+        navigate("/shop-grid-filter");
       }
     } catch (error) {
       console.error("Error creating order:", error);
@@ -141,7 +146,8 @@ const Checkout = () => {
     }
 
     const orderResponse = await axios.post(`${URL}/razorpay`, {
-      amount: values.totalAmount * 100 + (isGiftWrapping ? GIFT_WRAP_PRICE * 100 : 0),
+      amount:
+        values.totalAmount * 100 + (isGiftWrapping ? GIFT_WRAP_PRICE * 100 : 0),
       currency: "INR",
     });
 
@@ -150,7 +156,7 @@ const Checkout = () => {
       return;
     }
 
-    const { amount,id: order_id,  currency } = orderResponse.data;
+    const { amount, id: order_id, currency } = orderResponse.data;
     const options = {
       key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       amount: amount.toString(),
@@ -302,32 +308,32 @@ const Checkout = () => {
                     </div>
                     {/* gift wrapping available */}
                     <div className="additional-info">
-        <input 
-          type="checkbox"
-          name="gift"
-          style={{width: "6%", height: "14px"}}
-          checked={isGiftWrapping}
-          onChange={() => setIsGiftWrapping(!isGiftWrapping)}
-        />
-        <label>Gift wrapping available (+${GIFT_WRAP_PRICE})</label>
-      </div>
+                      <input
+                        type="checkbox"
+                        name="gift"
+                        style={{ width: "6%", height: "14px" }}
+                        checked={isGiftWrapping}
+                        onChange={() => setIsGiftWrapping(!isGiftWrapping)}
+                      />
+                      <label>
+                        Gift wrapping available (+${GIFT_WRAP_PRICE})
+                      </label>
+                    </div>
 
-      {/* Conditional rendering of gift message input */}
-      {isGiftWrapping && (
-        <div className="gift-message-section mb-20">
-          <label>Gift Message</label>
-          <textarea
-            placeholder="Enter your gift message (optional)"
-            value={giftMessage}
-            onChange={(e) => setGiftMessage(e.target.value)}
-            maxLength={200}
-          />
-        </div>
-      )}
+                    {/* Conditional rendering of gift message input */}
+                    {isGiftWrapping && (
+                      <div className="gift-message-section mb-20">
+                        <label>Gift Message</label>
+                        <textarea
+                          placeholder="Enter your gift message (optional)"
+                          value={giftMessage}
+                          onChange={(e) => setGiftMessage(e.target.value)}
+                          maxLength={200}
+                        />
+                      </div>
+                    )}
 
-      {/* Modify order total section to include gift wrap price */}
-    
-
+                    {/* Modify order total section to include gift wrap price */}
                   </div>
                 </div>
 
@@ -381,7 +387,6 @@ const Checkout = () => {
                                   </div>
                                 </div>
                               </div>
-                              
                             </div>
                           </div>
                         </div>
@@ -414,43 +419,64 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-bottom">
-                          <ul style={{marginBottom: "10px"}}>
-                          <li className="your-order-shipping"><p>Sub Total</p></li>
+                          <ul style={{ marginBottom: "10px" }}>
+                            <li className="your-order-shipping">
+                              <p>Sub Total</p>
+                            </li>
                             <li>
                               $
-                              {(cartItems.reduce((acc, item) => acc + item.totalAmount, 0))
-              .toFixed(2)}
+                              {cartItems
+                                .reduce(
+                                  (acc, item) => acc + item.totalAmount,
+                                  0
+                                )
+                                .toFixed(2)}
                             </li>
                           </ul>
-                          <ul style={{marginBottom: "10px"}}>
-                            
-                            <li className="your-order-shipping"><p>Shipping</p></li>
+                          <ul style={{ marginBottom: "10px" }}>
+                            <li className="your-order-shipping">
+                              <p>Shipping</p>
+                            </li>
                             <li>Free shipping</li>
                           </ul>
 
                           <ul>
-                            <li className="your-order-shipping"><p>Gift Wrapping</p></li>
-                            <li>
-                              ${isGiftWrapping ? GIFT_WRAP_PRICE : 0}
+                            <li className="your-order-shipping">
+                              <p>Gift Wrapping</p>
                             </li>
+                            <li>${isGiftWrapping ? GIFT_WRAP_PRICE : 0}</li>
                           </ul>
                           <ul>
-                            <li className="your-order-shipping"><p>GST</p></li>
+                            <li className="your-order-shipping">
+                              <p>GST</p>
+                            </li>
                             <li>
-                              ${cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0) .toFixed(2)}
+                              $
+                              {cartItems
+                                .reduce(
+                                  (acc, item) => acc + item.productDetails.gst,
+                                  0
+                                )
+                                .toFixed(2)}
                             </li>
                           </ul>
-
                         </div>
                         <div className="your-order-total">
                           <ul>
                             <li className="order-total">Total</li>
                             <li>
                               $
-                              {(cartItems.reduce((acc, item) => acc + item.totalAmount, 0) + 
-              (isGiftWrapping ? GIFT_WRAP_PRICE : 0)+
-              cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0))
-              .toFixed(2)}
+                              {(
+                                cartItems.reduce(
+                                  (acc, item) => acc + item.totalAmount,
+                                  0
+                                ) +
+                                (isGiftWrapping ? GIFT_WRAP_PRICE : 0) +
+                                cartItems.reduce(
+                                  (acc, item) => acc + item.productDetails.gst,
+                                  0
+                                )
+                              ).toFixed(2)}
                             </li>
                           </ul>
                         </div>
@@ -458,17 +484,17 @@ const Checkout = () => {
                       <div className="payment-method"></div>
                     </div>
                     <div className="place-order mt-25">
-                    <div className="place-order mt-25">
-                              <button
-                  className="btn-hover"
-                  onClick={handleSubmits}
-                  hidden
-                >
-                 Do  Payment
-                </button>
-                                <br/>
-                              </div>
-                      <button className="btn-hover" onClick={handleSubmit} >
+                      <div className="place-order mt-25">
+                        <button
+                          className="btn-hover"
+                          onClick={handleSubmits}
+                          hidden
+                        >
+                          Do Payment
+                        </button>
+                        <br />
+                      </div>
+                      <button className="btn-hover" onClick={handleSubmit}>
                         Confirm Order
                       </button>
                     </div>
