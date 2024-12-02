@@ -10,6 +10,7 @@ import "./style.scss";
 const Cart = () => {
   const navigate = useNavigate();
   const [customerCart, setCustomerCart] = useState([]);
+  const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
 
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -37,6 +38,14 @@ const Cart = () => {
     }
   }, []);
 //increment quantity
+const [checkoutDetailss, setCheckoutDetails] = useState({
+  totalQuantity: 0,
+  totalAmount: 0,
+  sizeDetails: {
+    total: 0,
+    discount: 0
+  }
+});
   const incrementQuantity = (productId) => {
     setCustomerCart((prevCart) =>
       prevCart.map((item) =>
@@ -133,6 +142,7 @@ const handleConfirmOrder = () => {
     }));
 
   localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
+  setIsOrderConfirmed(true)
   Swal.fire({
     icon: "success",
     title: "Success",
@@ -168,6 +178,20 @@ const handleProceedToCheckout = () => {
     navigate("/checkout"); 
   }
 };
+useEffect(() => {
+  // Calculate updated checkout details
+  const updatedCheckoutDetails = {
+    totalQuantity: calculateTotalQuantity(),
+    totalAmount: calculateTotalPrice(),
+    sizeDetails: {
+      total: calculateTotalPrice(),
+      discount: calculateTotalDiscount()
+    }
+  };
+  setCheckoutDetails(updatedCheckoutDetails); 
+  // Optionally, update localStorage if needed
+  localStorage.setItem("checkoutDetails", JSON.stringify(updatedCheckoutDetails));
+}, [customerCart, selectedSizes]);
 const [selectedSizes, setSelectedSizes] = useState({});
 const handleSizeSelect = (productId, size) => {
   setSelectedSizes((prev) => ({
@@ -359,8 +383,8 @@ const totalDiscount = calculateTotalDiscount();
                     </div>
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-lg-4 col-md-6">
+                <div className="row" hidden={!isOrderConfirmed}>
+                  {/* <div className="col-lg-4 col-md-6">
                     <div className="discount-code-wrapper">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gray">
@@ -377,8 +401,8 @@ const totalDiscount = calculateTotalDiscount();
                         </form>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-lg-6 col-md-12">
+                  </div> */}
+                  <div className="col-lg-12 col-md-12">
                   <div className="grand-totall">
   <div className="title-wrap">
     <h4 className="cart-bottom-title section-bg-gary-cart">
@@ -386,16 +410,19 @@ const totalDiscount = calculateTotalDiscount();
     </h4>
   </div>
   <h5 className="sub-total">
-    Total products <span>{checkoutDetails.totalQuantity}</span>
+    Total products <span>{checkoutDetailss.totalQuantity}</span>
   </h5>
   <h5 className="sub-total">
-    Total Amount <span>${checkoutDetails.sizeDetails.total ||0}</span>
+    Total Amount <span>${checkoutDetailss.sizeDetails.total.toFixed(2) || 0}</span>
   </h5>
   <h5 className="sub-total">
-    Total Discount <span>${totalDiscount.toFixed(2)} ({((totalDiscount / (totalAmount + totalDiscount) ||0) * 100).toFixed(2) }%)</span>
+    Total Discount <span>
+      ${totalDiscount.toFixed(2)} (
+      {((totalDiscount / (totalAmount + totalDiscount) || 0) * 100).toFixed(2)}%)
+    </span>
   </h5>
   <h4 className="grand-totall-title">
-    Grand Total <span>${(checkoutDetails.totalAmount || 0).toFixed(2)}</span>
+    Grand Total <span>${checkoutDetailss.totalAmount.toFixed(2) || 0}</span>
   </h4>
   <button
     className="checkoutbtn"
