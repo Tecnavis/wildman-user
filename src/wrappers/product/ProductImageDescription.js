@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   createCustomerCart,
   createWishlist,
@@ -30,7 +30,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const [reviewImage, setReviewImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-
+  const navigate = useNavigate()
   // Helper function to shuffle the array
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -155,6 +155,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
     }
   };
 
+
   //add to cart
 
   const decrementQuantity = () => {
@@ -227,6 +228,77 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       console.log("Error adding to cart", error);
     }
   };
+  const handleBuyNow = async (product) => {
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+    if (!customerDetails) {
+      let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      const existingProductIndex = guestCart.findIndex(
+        (item) => item._id === product._id
+      );
+  
+      if (existingProductIndex > -1) {
+        // If product already exists, update its quantity
+        guestCart[existingProductIndex].quantity =
+          (guestCart[existingProductIndex].quantity || 0) + quantity;
+      } else {
+        // If product is new, add it with the selected quantity
+        guestCart.push({
+          ...product,
+          quantity: quantity,
+        });
+      }
+  
+      localStorage.setItem("guestCart", JSON.stringify(guestCart));
+      Swal.fire({
+        icon: "success",
+        title: "Added to Cart",
+        text: `${quantity} item(s) added to your cart.`,
+      }).then(() => {
+        navigate("/cart"); // Redirect after the Swal popup is dismissed
+        window.location.reload()
+      });
+  
+      return;
+    }
+  
+    try {
+      const wishlistResponse = await fetchCustomerCart();
+      const existingWishlist = wishlistResponse || [];
+      const isProductInWishlist = existingWishlist.some(
+        (item) => item.productId._id === product._id
+      );
+  
+      if (isProductInWishlist) {
+        Swal.fire({
+          icon: "info",
+          title: "Already in Cart",
+          text: "This product is already in your cart.",
+        }).then(() => {
+          navigate("/cart"); // Redirect to cart even if the product is already in the cart
+          window.location.reload()
+        });
+        return;
+      }
+  
+      const cartData = {
+        productId: product._id,
+        customerId: customerDetails._id,
+        quantity: quantity, // Include quantity in cart data
+      };
+      await createCustomerCart(cartData);
+  
+      Swal.fire({
+        icon: "success",
+        title: "Added to Cart",
+        text: `${quantity} item(s) added to your cart.`,
+      }).then(() => {
+        navigate("/cart"); // Redirect after the Swal popup is dismissed
+      });
+    } catch (error) {
+      console.log("Error adding to cart", error);
+    }
+  };
+  
   //submit review
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -466,6 +538,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </button>
                     </div>
                   </div>
+                  <div className="pro-details-cart btn-hover" style={{width:"100%"}}>
+                    <button  onClick={() => handleBuyNow(product)} className="pro-details-compare" style={{width:"100%",height:"45px",backgroundColor:"black",color:"white",border:"none"}}>
+                     Buy Now
+                    </button>
+                  </div><br/>
 
                   {product.returnpolicy === "Yes" && (
                     <a className="" style={{ color: "red" }}>
