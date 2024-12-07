@@ -9,7 +9,7 @@ import {
   fetchWishlist,
   URL,
 } from "../../helpers/handle_api";
-import { Carousel } from 'react-bootstrap';
+import { Carousel } from "react-bootstrap";
 import ProductRating from "../../components/product/sub-components/ProductRating";
 import Swiper, { SwiperSlide } from "../../components/swiper";
 import LayoutOne from "../../layouts/LayoutOne";
@@ -64,7 +64,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reviews:", error);
-      setReviews([]); 
+      setReviews([]);
       setLoading(false);
     }
   };
@@ -158,11 +158,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   //add to cart
 
   const decrementQuantity = () => {
-    setQuantity(prevQuantity => Math.max(1, prevQuantity - 1));
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1));
   };
 
   const incrementQuantity = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
+    setQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   // Modify the existing add to cart function to include quantity
@@ -170,32 +170,38 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
       let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-      const isProductInGuestWishlist = guestCart.some(
+      const existingProductIndex = guestCart.findIndex(
         (item) => item._id === product._id
       );
-      if (isProductInGuestWishlist) {
-        Swal.fire({
-          icon: "info",
-          title: "Already in Cart",
-          text: "This product is already in your cart.",
+
+      if (existingProductIndex > -1) {
+        // If product already exists, update its quantity
+        guestCart[existingProductIndex].quantity =
+          (guestCart[existingProductIndex].quantity || 0) + quantity;
+      } else {
+        // If product is new, add it with the selected quantity
+        guestCart.push({
+          ...product,
+          quantity: quantity,
         });
-        return;
       }
-      guestCart.push(product);
+
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
-        text: "The product has been added to your cart.",
+        text: `${quantity} item(s) added to your cart.`,
       });
       return;
     }
+
     try {
       const wishlistResponse = await fetchCustomerCart();
       const existingWishlist = wishlistResponse || [];
       const isProductInWishlist = existingWishlist.some(
         (item) => item.productId._id === product._id
       );
+
       if (isProductInWishlist) {
         Swal.fire({
           icon: "info",
@@ -204,15 +210,18 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
+
       const cartData = {
         productId: product._id,
         customerId: customerDetails._id,
+        quantity: quantity, // Include quantity in cart data
       };
       await createCustomerCart(cartData);
+
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
-        text: "The product has been added to your cart.",
+        text: `${quantity} item(s) added to your cart.`,
       });
     } catch (error) {
       console.log("Error adding to cart", error);
@@ -320,30 +329,30 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </div>
                     </SwiperSlide>
                   </Swiper>
-                   <div className="row mt-3">
-          <div className="col-12">
-            <Carousel 
-              indicators={true}
-              controls={true}
-              interval={3000} // Change image every 3 seconds
-              pause="hover"
-            >
-              {product.images.map((img, idx) => (
-                <Carousel.Item key={idx}>
-                  <img
-                    className="d-block w-100"
-                    src={`${URL}/images/${img}`}
-                    alt={`Product image ${idx + 1}`}
-                    style={{ 
-                      maxHeight: '400px', 
-                      objectFit: 'contain' 
-                    }}
-                  />
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </div>
-        </div>
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <Carousel
+                        indicators={true}
+                        controls={true}
+                        interval={3000} // Change image every 3 seconds
+                        pause="hover"
+                      >
+                        {product.images.map((img, idx) => (
+                          <Carousel.Item key={idx}>
+                            <img
+                              className="d-block w-100"
+                              src={`${URL}/images/${img}`}
+                              alt={`Product image ${idx + 1}`}
+                              style={{
+                                maxHeight: "400px",
+                                objectFit: "contain",
+                              }}
+                            />
+                          </Carousel.Item>
+                        ))}
+                      </Carousel>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="col-lg-6 col-md-6">
@@ -421,15 +430,25 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
 
                   <div className="pro-details-quality">
                     <div className="cart-plus-minus">
-                    <button className="dec qtybutton" onClick={decrementQuantity}>-</button>
-        <input
-          className="cart-plus-minus-box"
-          type="text"
-          value={quantity}
-          readOnly
-        />
-        <button className="inc qtybutton" onClick={incrementQuantity}>+</button>
-      </div>
+                      <button
+                        className="dec qtybutton"
+                        onClick={decrementQuantity}
+                      >
+                        -
+                      </button>
+                      <input
+                        className="cart-plus-minus-box"
+                        type="text"
+                        value={quantity}
+                        readOnly
+                      />
+                      <button
+                        className="inc qtybutton"
+                        onClick={incrementQuantity}
+                      >
+                        +
+                      </button>
+                    </div>
                     <div className="pro-details-cart btn-hover">
                       <button onClick={() => handleAddToCart(product)}>
                         {" "}
@@ -530,7 +549,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     )} */}
                     {product.length && (
                       <span>
-                        Dimension:(L) {product.length} ,(H) {product.height}, (W) {product.weight} <br />
+                        Dimension:(L) {product.length} ,(H) {product.height},
+                        (W) {product.weight} <br />
                       </span>
                     )}
                     {product.date && (
@@ -613,7 +633,9 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="productReviews">Reviews({reviews.length})</Nav.Link>
+                    <Nav.Link eventKey="productReviews">
+                      Reviews({reviews.length})
+                    </Nav.Link>
                   </Nav.Item>
                 </Nav>
                 <Tab.Content className="description-review-bottom">
@@ -700,9 +722,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <h4 className="desc">{product.title}</h4>
                     <p className="des">{product.description}</p>
                     <br />
-                    <p className="des">
-                     {product.about}
-                    </p>
+                    <p className="des">{product.about}</p>
                   </Tab.Pane>
                   <Tab.Pane eventKey="productReviews">
                     <div className="row">

@@ -3,7 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { fetchCustomerCart, URL, deleteCustomerCart } from "../../helpers/handle_api";
+import {
+  fetchCustomerCart,
+  URL,
+  deleteCustomerCart,
+} from "../../helpers/handle_api";
 import Swal from "sweetalert2";
 import "./style.scss";
 
@@ -14,16 +18,15 @@ const Cart = () => {
 
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+
     if (customerDetails) {
       fetchCustomerCart()
         .then((res) => {
           const cartWithQuantity = res.map((item) => ({
             ...item,
-            quantity: 1, // initialize with default quantity of 1
+            quantity: item.quantity || 1, // Use existing quantity or default to 1
           }));
           setCustomerCart(cartWithQuantity);
-          console.log("Cart data:", cartWithQuantity);
-          
         })
         .catch((err) => {
           console.log(err);
@@ -32,20 +35,21 @@ const Cart = () => {
       const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
       const cartWithQuantity = guestCart.map((item) => ({
         ...item,
-        quantity: 1, // initialize with default quantity of 1
+        quantity: item.quantity || 1, // Use existing quantity or default to 1
       }));
       setCustomerCart(cartWithQuantity);
     }
   }, []);
-//increment quantity
-const [checkoutDetailss, setCheckoutDetails] = useState({
-  totalQuantity: 0,
-  totalAmount: 0,
-  sizeDetails: {
-    total: 0,
-    discount: 0
-  }
-});
+
+  //increment quantity
+  const [checkoutDetailss, setCheckoutDetails] = useState({
+    totalQuantity: 0,
+    totalAmount: 0,
+    sizeDetails: {
+      total: 0,
+      discount: 0,
+    },
+  });
   const incrementQuantity = (productId) => {
     setCustomerCart((prevCart) =>
       prevCart.map((item) =>
@@ -53,7 +57,7 @@ const [checkoutDetailss, setCheckoutDetails] = useState({
       )
     );
   };
-//decrement quantity
+  //decrement quantity
   const decrementQuantity = (productId) => {
     setCustomerCart((prevCart) =>
       prevCart.map((item) =>
@@ -63,14 +67,16 @@ const [checkoutDetailss, setCheckoutDetails] = useState({
       )
     );
   };
-//delete cart items
+  //delete cart items
   const handleDeleteCustomer = (productId) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
 
     if (customerDetails) {
       deleteCustomerCart(productId)
         .then(() => {
-          setCustomerCart((prevItems) => prevItems.filter((item) => item._id !== productId));
+          setCustomerCart((prevItems) =>
+            prevItems.filter((item) => item._id !== productId)
+          );
         })
         .catch((err) => console.log(err));
     } else {
@@ -80,146 +86,143 @@ const [checkoutDetailss, setCheckoutDetails] = useState({
       setCustomerCart(updatedCart);
     }
   };
-  //calculate total amount
-  // const calculateTotalPrice = () => {
-  //   return customerCart.reduce((total, item) => {
-  //     return total + (item.price || item.productId.price) * item.quantity;
-  //   }, 0);
-  // };
-  
+  //  calculate total quantity of purchased items
+  const calculateTotalQuantity = () => {
+    return customerCart.reduce((total, item) => total + item.quantity, 0);
+  };
+  const totalQuantity = calculateTotalQuantity();
+  //confirmed orders
+  const handleConfirmOrder = () => {
+    if (totalQuantity === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Cart is empty",
+      });
+      return;
+    }
+    // Check if all items with non-zero quantity have a size selected
+    const missingSizes = customerCart.filter(
+      (item) => item.quantity > 0 && !selectedSizes[item._id]
+    );
 
-   //  calculate total quantity of purchased items
-const calculateTotalQuantity = () => {
-  return customerCart.reduce((total, item) => total + item.quantity, 0);
-};
-const totalQuantity = calculateTotalQuantity();
-//confirmed orders
-const handleConfirmOrder = () => {
+    if (missingSizes.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Size Selection Required",
+        text: "Please select a size for all items before confirming the order.",
+      });
+      return;
+    }
+    const checkoutDetails = customerCart
+      .filter((item) => item.quantity > 0)
+      .map((item) => ({
+        productDetails: {
+          id: item.productId._id,
+          color: item.color || item.productId.color,
+          title: item.title || item.productId.title,
+          mainCategory: item.mainCategory || item.productId.mainCategory,
+          subCategory: item.subCategory || item.productId.subCategory,
+          price: item.price || item.productId.price,
+          coverImage: item.coverimage || item.productId.coverimage,
+          discount: item.discount || item.productId.discount,
+          gst: item.gst || item.productId.gst,
+        },
+        sizeDetails: {
+          sizeId: item._id,
+          size: selectedSizes[item._id] || item.size,
+          quantity: item.quantity,
+          total: (item.price || item.productId.price) * item.quantity || 0,
+          discount: item.discount || item.productId.discount,
+        },
+        totalQuantity,
+        totalAmount,
+      }));
 
-  if (totalQuantity === 0) {
+    localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
+    setIsOrderConfirmed(true);
     Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Cart is empty",
+      icon: "success",
+      title: "Success",
+      text: "Order confirmed!",
     });
-    return;
-  }
-  // Check if all items with non-zero quantity have a size selected
-  const missingSizes = customerCart
-    .filter((item) => item.quantity > 0 && !selectedSizes[item._id]);
+  };
 
-  if (missingSizes.length > 0) {
-    Swal.fire({
-      icon: "error",
-      title: "Size Selection Required",
-      text: "Please select a size for all items before confirming the order.",
-    });
-    return;
-  }
-  const checkoutDetails = customerCart
-    .filter((item) => item.quantity > 0) 
-    .map((item) => ({
-      productDetails: {
-        id: item.productId._id,
-        color: item.color || item.productId.color,
-        title: item.title || item.productId.title,
-        mainCategory: item.mainCategory || item.productId.mainCategory,
-        subCategory: item.subCategory || item.productId.subCategory,
-        price: item.price || item.productId.price,
-        coverImage: item.coverimage || item.productId.coverimage,
-        discount: item.discount || item.productId.discount,
-        gst: item.gst || item.productId.gst
-      },
-      sizeDetails: {
-        sizeId: item._id,
-        size: selectedSizes[item._id] || item.size, 
-        quantity: item.quantity,
-        total: (item.price || item.productId.price) * item.quantity||0,
-        discount: item.discount||item.productId.discount,
-      },
-      totalQuantity,
-      totalAmount,
-    }));
-
-  localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
-  setIsOrderConfirmed(true)
-  Swal.fire({
-    icon: "success",
-    title: "Success",
-    text: "Order confirmed!",
-  })
-};
-
-const isConfirmOrderDisabled = calculateTotalQuantity === 0;
-const checkoutDetails = JSON.parse(localStorage.getItem("checkoutDetails"))?.[0] || {
-  totalQuantity: 0,
-  totalAmount: 0,
-  sizeDetails: {
-    total: 0,
-    discount: 0
-  }
-};
-
-const handleProceedToCheckout = () => {
-  const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-  
-  if (!customerDetails) {
-    Swal.fire({
-      icon: "warning",
-      title: "Login Required",
-      text: "Please log in to proceed to checkout.",
-      confirmButtonText: "Login",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/login-register"); 
-      }
-    });
-  } else {
-    navigate("/checkout"); 
-  }
-};
-useEffect(() => {
-  // Calculate updated checkout details
-  const updatedCheckoutDetails = {
-    totalQuantity: calculateTotalQuantity(),
-    totalAmount: calculateTotalPrice(),
+  const isConfirmOrderDisabled = calculateTotalQuantity === 0;
+  const checkoutDetails = JSON.parse(
+    localStorage.getItem("checkoutDetails")
+  )?.[0] || {
+    totalQuantity: 0,
+    totalAmount: 0,
     sizeDetails: {
-      total: calculateTotalPrice(),
-      discount: calculateTotalDiscount()
+      total: 0,
+      discount: 0,
+    },
+  };
+
+  const handleProceedToCheckout = () => {
+    const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+
+    if (!customerDetails) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please log in to proceed to checkout.",
+        confirmButtonText: "Login",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login-register");
+        }
+      });
+    } else {
+      navigate("/checkout");
     }
   };
-  setCheckoutDetails(updatedCheckoutDetails); 
-  // Optionally, update localStorage if needed
-  localStorage.setItem("checkoutDetails", JSON.stringify(updatedCheckoutDetails));
-}, [customerCart, selectedSizes]);
-const [selectedSizes, setSelectedSizes] = useState({});
-const handleSizeSelect = (productId, size) => {
-  setSelectedSizes((prev) => ({
-    ...prev,
-    [productId]: size,
-  }));
-};
+  useEffect(() => {
+    // Calculate updated checkout details
+    const updatedCheckoutDetails = {
+      totalQuantity: calculateTotalQuantity(),
+      totalAmount: calculateTotalPrice(),
+      sizeDetails: {
+        total: calculateTotalPrice(),
+        discount: calculateTotalDiscount(),
+      },
+    };
+    setCheckoutDetails(updatedCheckoutDetails);
+    // Optionally, update localStorage if needed
+    localStorage.setItem(
+      "checkoutDetails",
+      JSON.stringify(updatedCheckoutDetails)
+    );
+  }, [customerCart, selectedSizes]);
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const handleSizeSelect = (productId, size) => {
+    setSelectedSizes((prev) => ({
+      ...prev,
+      [productId]: size,
+    }));
+  };
 
-const calculateTotalPrice = () => {
-  return customerCart.reduce((total, item) => {
-    const price = item.price || item.productId.price;
-    const discount = item.discount || item.productId.discount || 0;
-    const discountedPrice = price * (1 - discount / 100);
-    return total + discountedPrice * item.quantity;
-  }, 0);
-};
+  const calculateTotalPrice = () => {
+    return customerCart.reduce((total, item) => {
+      const price = item.price || item.productId.price;
+      const discount = item.discount || item.productId.discount || 0;
+      const discountedPrice = price * (1 - discount / 100);
+      return total + discountedPrice * item.quantity;
+    }, 0);
+  };
 
-const calculateTotalDiscount = () => {
-  return customerCart.reduce((totalDiscount, item) => {
-    const price = item.price || item.productId.price;
-    const discount = item.discount || item.productId.discount || 0;
-    const discountAmount = price * (discount / 100) * item.quantity;
-    return totalDiscount + discountAmount;
-  }, 0);
-};
+  const calculateTotalDiscount = () => {
+    return customerCart.reduce((totalDiscount, item) => {
+      const price = item.price || item.productId.price;
+      const discount = item.discount || item.productId.discount || 0;
+      const discountAmount = price * (discount / 100) * item.quantity;
+      return totalDiscount + discountAmount;
+    }, 0);
+  };
 
-const totalAmount = calculateTotalPrice();
-const totalDiscount = calculateTotalDiscount();
+  const totalAmount = calculateTotalPrice();
+  const totalDiscount = calculateTotalDiscount();
   return (
     <Fragment>
       <SEO
@@ -258,7 +261,11 @@ const totalDiscount = calculateTotalDiscount();
                           {customerCart.map((item) => (
                             <tr key={item._id}>
                               <td className="product-thumbnail">
-                              <Link to={`/productview/${item.productId._id||item._id}`}>
+                                <Link
+                                  to={`/productview/${
+                                    item.productId._id || item._id
+                                  }`}
+                                >
                                   <img
                                     className="img-fluid"
                                     src={`${URL}/images/${
@@ -308,7 +315,7 @@ const totalDiscount = calculateTotalDiscount();
                               </td>
                               <td className="product-price-cart">
                                 <span className="amount">
-                                ₹.{" "}
+                                  ₹.{" "}
                                   {item.price
                                     ? (
                                         item.price *
@@ -345,10 +352,20 @@ const totalDiscount = calculateTotalDiscount();
                                 </div>
                               </td>
                               <td className="product-subtotal">
-                              ₹
-                                {(item.price || item.productId.price) *
-                                  item.quantity}
+                                ₹
+                                {item.quantity *
+                                  (item.price
+                                    ? (
+                                        item.price *
+                                        (1 - (item.discount || 0) / 100)
+                                      ).toFixed(2)
+                                    : (
+                                        item.productId.price *
+                                        (1 -
+                                          (item.productId.discount || 0) / 100)
+                                      ).toFixed(2))}
                               </td>
+
                               <td className="product-remove">
                                 <button
                                   onClick={() => handleDeleteCustomer(item._id)}
@@ -403,34 +420,55 @@ const totalDiscount = calculateTotalDiscount();
                     </div>
                   </div> */}
                   <div className="col-lg-12 col-md-12">
-                  <div className="grand-totall">
-  <div className="title-wrap">
-    <h4 className="cart-bottom-title section-bg-gary-cart">
-      Cart Total
-    </h4>
-  </div>
-  <h5 className="sub-total">
-    Total products <span>{checkoutDetailss.totalQuantity}</span>
-  </h5>
-  <h5 className="sub-total">
-    Total Amount <span>₹{checkoutDetailss.sizeDetails.total.toFixed(2) || 0}</span>
-  </h5>
-  <h5 className="sub-total">
-    Total Discount <span>
-    ₹{totalDiscount.toFixed(2)} (
-      {((totalDiscount / (totalAmount + totalDiscount) || 0) * 100).toFixed(2)}%)
-    </span>
-  </h5>
-  <h4 className="grand-totall-title">
-    Grand Total <span>₹{checkoutDetailss.totalAmount.toFixed(2) || 0}</span>
-  </h4>
-  <button
-    className="checkoutbtn"
-    onClick={handleProceedToCheckout}
-  >
-    Proceed to Checkout
-  </button>
-</div>
+                    <div className="grand-totall">
+                      <div className="title-wrap">
+                        <h4 className="cart-bottom-title section-bg-gary-cart">
+                          Cart Total
+                        </h4>
+                      </div>
+                      <h5 className="sub-total">
+                        Total products{" "}
+                        <span>{checkoutDetailss.totalQuantity}</span>
+                      </h5>
+                      <h5 className="sub-total">
+                        MRP Price
+                        <span>
+                          ₹{" "}
+                          {(checkoutDetailss.sizeDetails.total || 0) +
+                            parseFloat(totalDiscount.toFixed(2))}
+                        </span>
+                      </h5>
+
+                      <h5 className="sub-total">
+                        Total Discount{" "}
+                        <span>
+                          -₹{totalDiscount.toFixed(2)} (
+                          {(
+                            (totalDiscount / (totalAmount + totalDiscount) ||
+                              0) * 100
+                          ).toFixed(2)}
+                          %)
+                        </span>
+                      </h5>
+                      <h5 className="sub-total">
+                        Total Amount{" "}
+                        <span>
+                          ₹{checkoutDetailss.sizeDetails.total.toFixed(2) || 0}
+                        </span>
+                      </h5>
+                      <h4 className="grand-totall-title">
+                        Grand Total{" "}
+                        <span>
+                          ₹{checkoutDetailss.totalAmount.toFixed(2) || 0}
+                        </span>
+                      </h4>
+                      <button
+                        className="checkoutbtn"
+                        onClick={handleProceedToCheckout}
+                      >
+                        Proceed to Checkout
+                      </button>
+                    </div>
                   </div>
                 </div>
               </Fragment>
