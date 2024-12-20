@@ -30,7 +30,29 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const [reviewImage, setReviewImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(""); // New state for selected image
+
   const navigate = useNavigate()
+  useEffect(() => {
+    const getProductDetails = async () => {
+      try {
+        const productData = await fetchProductDetails(id);
+        setProduct(productData);
+        // Set the initial selected image when product data is fetched
+        if (productData && productData.images && productData.images.length > 0) {
+          setSelectedImage(productData.images[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    };
+    getProductDetails();
+  }, [id]); // Add id as dependency
+
+  // Handler for carousel image click
+  const handleImageClick = (img) => {
+    setSelectedImage(img);
+  };
   // Helper function to shuffle the array
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -369,6 +391,13 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       />
     ));
   };
+  const getPairedImages = (images) => {
+    const pairs = [];
+    for (let i = 0; i < images.length; i += 1) {
+      pairs.push(images.slice(i, i + 2));
+    }
+    return pairs;
+  };
   return (
     <Fragment>
       <SEO titleTemplate="Product Page" description="Product details page." />
@@ -378,55 +407,68 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
             { label: "Home", path: "/" },
             { label: "Product Details", path: "" },
           ]}
-        />
-        <div className={`shop-area ${spaceTopClass} ${spaceBottomClass}`}>
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-6 col-md-6">
-                <div className="product-large-image-wrapper">
-                  <div className="product-img-badges">
-                    {product.discount && (
-                      <span className="pink">-{product.discount}%</span>
-                    )}
-                    <span className="purple">New</span>
-                  </div>
-                  <Swiper>
-                    <SwiperSlide>
-                      <div className="single-image">
-                        <img
-                          src={`${URL}/images/${product.coverimage}`}
-                          className="img-fluid"
-                          alt={product.name}
-                        />
-                      </div>
-                    </SwiperSlide>
-                  </Swiper>
-                  <div className="row mt-3">
-                    <div className="col-12">
-                      <Carousel
-                        indicators={true}
-                        controls={true}
-                        interval={3000} // Change image every 3 seconds
-                        pause="hover"
-                      >
-                        {product.images.map((img, idx) => (
-                          <Carousel.Item key={idx}>
-                            <img
-                              className="d-block w-100"
-                              src={`${URL}/images/${img}`}
-                              alt={`Product image ${idx + 1}`}
-                              style={{
-                                maxHeight: "400px",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </Carousel.Item>
-                        ))}
-                      </Carousel>
-                    </div>
-                  </div>
+        /> <div className={`shop-area ${spaceTopClass} ${spaceBottomClass}`}>
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-6 col-md-6">
+              <div className="product-large-image-wrapper">
+                <div className="product-img-badges">
+                  {product.discount && (
+                    <span className="pink">-{product.discount}%</span>
+                  )}
+                  <span className="purple">New</span>
                 </div>
+                <Swiper>
+                  <SwiperSlide>
+                    <div className="single-image">
+                      <img
+                        src={`${URL}/images/${selectedImage}`}
+                        className="img-fluid"
+                        alt={product.name}
+                      />
+                    </div>
+                  </SwiperSlide>
+                </Swiper>
+                <div className="row mt-3">
+        <div className="col-12">
+          <Carousel
+            indicators={true}
+            controls={true}
+            interval={3000}
+            pause="hover"
+          >
+            {getPairedImages(product.images).map((pair, pairIdx) => (
+              <Carousel.Item key={pairIdx}>
+                <div className="d-flex justify-content-between">
+                  {pair.map((img, idx) => (
+                    <div 
+                      key={idx} 
+                      className="px-1" 
+                      style={{ width: '50%' }}
+                      onClick={() => handleImageClick(img)}
+                    >
+                      <img
+                        className="d-block w-100"
+                        src={`${URL}/images/${img}`}
+                        alt={`Product image ${pairIdx * 2 + idx + 1}`}
+                        style={{
+                          maxHeight: "400px",
+                          objectFit: "contain",
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
+                  ))}
+                  {/* If there's only one image in the last pair, add an empty div for spacing */}
+                  {pair.length === 1 && <div style={{ width: '50%' }}></div>}
+                </div>
+              </Carousel.Item>
+            ))}
+          </Carousel>
+        </div>
+      </div>
               </div>
+            </div>
               <div className="col-lg-6 col-md-6">
                 <div className="product-details-content ml-70">
                   <a className="des">{product.title}</a>
