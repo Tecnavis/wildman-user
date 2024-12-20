@@ -32,14 +32,18 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(""); // New state for selected image
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     const getProductDetails = async () => {
       try {
         const productData = await fetchProductDetails(id);
         setProduct(productData);
         // Set the initial selected image when product data is fetched
-        if (productData && productData.images && productData.images.length > 0) {
+        if (
+          productData &&
+          productData.images &&
+          productData.images.length > 0
+        ) {
           setSelectedImage(productData.images[0]);
         }
       } catch (error) {
@@ -47,7 +51,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       }
     };
     getProductDetails();
-  }, [id]); // Add id as dependency
+  }, [id]); 
 
   // Handler for carousel image click
   const handleImageClick = (img) => {
@@ -57,7 +61,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
   };
-
   // Fetch and display random 6 products
   useEffect(() => {
     fetchProducts()
@@ -73,7 +76,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   useEffect(() => {
     fetchReviews();
   }, [product]);
-
+// Fetch reviews
   const fetchReviews = async () => {
     try {
       const response = await fetch(`${URL}/review/${product._id}`);
@@ -90,7 +93,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       setLoading(false);
     }
   };
-
   //add to recently viewed
   const addToRecentlyViewed = (product) => {
     let recentlyViewed =
@@ -115,7 +117,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
     getProductDetails();
   }, []);
 
-  if (!product) return <p>Loading...</p>; // Show loading state if product data is not yet loaded
+  if (!product) return <p>Loading...</p>; 
   if (id) {
     fetchProductDetails(id);
   } else {
@@ -176,18 +178,13 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       console.log("Error adding to wishlist", error);
     }
   };
-
-
   //add to cart
-
   const decrementQuantity = () => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1));
   };
-
   const incrementQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
   };
-
   // Modify the existing add to cart function to include quantity
   const handleAddToCart = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -196,7 +193,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       const existingProductIndex = guestCart.findIndex(
         (item) => item._id === product._id
       );
-
       if (existingProductIndex > -1) {
         // If product already exists, update its quantity
         guestCart[existingProductIndex].quantity =
@@ -208,7 +204,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
           quantity: quantity,
         });
       }
-
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
       Swal.fire({
         icon: "success",
@@ -217,14 +212,12 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
       return;
     }
-
     try {
       const wishlistResponse = await fetchCustomerCart();
       const existingWishlist = wishlistResponse || [];
       const isProductInWishlist = existingWishlist.some(
         (item) => item.productId._id === product._id
       );
-
       if (isProductInWishlist) {
         Swal.fire({
           icon: "info",
@@ -233,14 +226,12 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
         });
         return;
       }
-
       const cartData = {
         productId: product._id,
         customerId: customerDetails._id,
         quantity: quantity, // Include quantity in cart data
       };
       await createCustomerCart(cartData);
-
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
@@ -250,6 +241,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       console.log("Error adding to cart", error);
     }
   };
+  //buy now
   const handleBuyNow = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
@@ -257,7 +249,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       const existingProductIndex = guestCart.findIndex(
         (item) => item._id === product._id
       );
-  
       if (existingProductIndex > -1) {
         // If product already exists, update its quantity
         guestCart[existingProductIndex].quantity =
@@ -269,62 +260,55 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
           quantity: quantity,
         });
       }
-  
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
         text: `${quantity} item(s) added to your cart.`,
       }).then(() => {
-        navigate("/cart"); // Redirect after the Swal popup is dismissed
-        window.location.reload()
+        navigate("/cart"); 
+        window.location.reload();
       });
-  
       return;
     }
-  
     try {
       const wishlistResponse = await fetchCustomerCart();
       const existingWishlist = wishlistResponse || [];
       const isProductInWishlist = existingWishlist.some(
         (item) => item.productId._id === product._id
       );
-  
+
       if (isProductInWishlist) {
         Swal.fire({
           icon: "info",
           title: "Already in Cart",
           text: "This product is already in your cart.",
         }).then(() => {
-          navigate("/cart"); // Redirect to cart even if the product is already in the cart
-          window.location.reload()
+          navigate("/cart");
+          window.location.reload();
         });
         return;
       }
-  
       const cartData = {
         productId: product._id,
         customerId: customerDetails._id,
-        quantity: quantity, // Include quantity in cart data
+        quantity: quantity,
       };
       await createCustomerCart(cartData);
-  
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
         text: `${quantity} item(s) added to your cart.`,
       }).then(() => {
-        navigate("/cart"); // Redirect after the Swal popup is dismissed
+        navigate("/cart"); 
       });
     } catch (error) {
       console.log("Error adding to cart", error);
     }
   };
-  
   //submit review
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
       Swal.fire({
@@ -334,7 +318,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
       return;
     }
-
     const formData = new FormData();
     formData.append("productId", id);
     formData.append("customerId", customerDetails._id);
@@ -343,7 +326,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
     if (reviewImage) {
       formData.append("image", reviewImage);
     }
-
     try {
       const response = await fetch(`${URL}/review`, {
         method: "POST",
@@ -356,17 +338,14 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
           title: "Review Submitted",
           text: "Thank you for your review!",
         });
-
         // Fetch updated reviews
         const updatedReviewsResponse = await fetch(`${URL}/review/${id}`);
         const updatedData = await updatedReviewsResponse.json();
-
         if (updatedData.success && Array.isArray(updatedData.reviews)) {
           setReviews(updatedData.reviews);
         } else {
           setReviews([]);
         }
-
         // Reset form
         setUserRating(0);
         setReviewText("");
@@ -381,7 +360,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
       });
     }
   };
-
   const renderStars = (rating) => {
     return [...Array(5)].map((_, index) => (
       <i
@@ -407,68 +385,75 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
             { label: "Home", path: "/" },
             { label: "Product Details", path: "" },
           ]}
-        /> <div className={`shop-area ${spaceTopClass} ${spaceBottomClass}`}>
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-6 col-md-6">
-              <div className="product-large-image-wrapper">
-                <div className="product-img-badges">
-                  {product.discount && (
-                    <span className="pink">-{product.discount}%</span>
-                  )}
-                  <span className="purple">New</span>
-                </div>
-                <Swiper>
-                  <SwiperSlide>
-                    <div className="single-image">
-                      <img
-                        src={`${URL}/images/${selectedImage}`}
-                        className="img-fluid"
-                        alt={product.name}
-                      />
+        />{" "}
+        <div className={`shop-area ${spaceTopClass} ${spaceBottomClass}`}>
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 col-md-6">
+                <div className="product-large-image-wrapper">
+                  <div className="product-img-badges">
+                    {product.discount && (
+                      <span className="pink">-{product.discount}%</span>
+                    )}
+                    <span className="purple">New</span>
+                  </div>
+                  <Swiper>
+                    <SwiperSlide>
+                      <div className="single-image">
+                        <img
+                          src={`${URL}/images/${selectedImage}`}
+                          className="img-fluid"
+                          alt={product.name}
+                        />
+                      </div>
+                    </SwiperSlide>
+                  </Swiper>
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <Carousel
+                        indicators={true}
+                        controls={true}
+                        interval={3000}
+                        pause="hover"
+                      >
+                        {getPairedImages(product.images).map(
+                          (pair, pairIdx) => (
+                            <Carousel.Item key={pairIdx}>
+                              <div className="d-flex justify-content-between">
+                                {pair.map((img, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="px-1"
+                                    style={{ width: "50%" }}
+                                    onClick={() => handleImageClick(img)}
+                                  >
+                                    <img
+                                      className="d-block w-100"
+                                      src={`${URL}/images/${img}`}
+                                      alt={`Product image ${
+                                        pairIdx * 2 + idx + 1
+                                      }`}
+                                      style={{
+                                        maxHeight: "400px",
+                                        objectFit: "contain",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </div>
+                                ))}
+                                {/* If there's only one image in the last pair, add an empty div for spacing */}
+                                {pair.length === 1 && (
+                                  <div style={{ width: "50%" }}></div>
+                                )}
+                              </div>
+                            </Carousel.Item>
+                          )
+                        )}
+                      </Carousel>
                     </div>
-                  </SwiperSlide>
-                </Swiper>
-                <div className="row mt-3">
-        <div className="col-12">
-          <Carousel
-            indicators={true}
-            controls={true}
-            interval={3000}
-            pause="hover"
-          >
-            {getPairedImages(product.images).map((pair, pairIdx) => (
-              <Carousel.Item key={pairIdx}>
-                <div className="d-flex justify-content-between">
-                  {pair.map((img, idx) => (
-                    <div 
-                      key={idx} 
-                      className="px-1" 
-                      style={{ width: '50%' }}
-                      onClick={() => handleImageClick(img)}
-                    >
-                      <img
-                        className="d-block w-100"
-                        src={`${URL}/images/${img}`}
-                        alt={`Product image ${pairIdx * 2 + idx + 1}`}
-                        style={{
-                          maxHeight: "400px",
-                          objectFit: "contain",
-                          cursor: 'pointer'
-                        }}
-                      />
-                    </div>
-                  ))}
-                  {/* If there's only one image in the last pair, add an empty div for spacing */}
-                  {pair.length === 1 && <div style={{ width: '50%' }}></div>}
+                  </div>
                 </div>
-              </Carousel.Item>
-            ))}
-          </Carousel>
-        </div>
-      </div>
               </div>
-            </div>
               <div className="col-lg-6 col-md-6">
                 <div className="product-details-content ml-70">
                   <a className="des">{product.title}</a>
@@ -485,7 +470,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                             product.price *
                             (1 - product.discount / 100)
                           ).toFixed(2)}
-                        </span>MRP.
+                        </span>
+                        MRP.
                         <span className="old"> {product.price}.00</span>
                         <p style={{ color: "green" }}>
                           You saved RS.{" "}
@@ -585,11 +571,25 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </button>
                     </div>
                   </div>
-                  <div className="pro-details-cart btn-hover" style={{width:"100%"}}>
-                    <button  onClick={() => handleBuyNow(product)} className="pro-details-compare" style={{width:"100%",height:"45px",backgroundColor:"black",color:"white",border:"none"}}>
-                     Buy Now
+                  <div
+                    className="pro-details-cart btn-hover"
+                    style={{ width: "100%" }}
+                  >
+                    <button
+                      onClick={() => handleBuyNow(product)}
+                      className="pro-details-compare"
+                      style={{
+                        width: "100%",
+                        height: "45px",
+                        backgroundColor: "black",
+                        color: "white",
+                        border: "none",
+                      }}
+                    >
+                      Buy Now
                     </button>
-                  </div><br/>
+                  </div>
+                  <br />
                   <hr />
                   <div style={{ lineHeight: "35px" }} className="des col-12">
                     <u>
@@ -759,10 +759,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                           )}
                         </li>
                         <span>
-                        Date of Manufacture:{" "}
-                        {new Date(product.date).toLocaleDateString("en-GB")}{" "}
+                          Date of Manufacture:{" "}
+                          {new Date(product.date).toLocaleDateString("en-GB")}{" "}
+                          <br />
+                        </span>
                         <br />
-                      </span><br/>
                         <li>
                           {product.meterial && (
                             <span>
@@ -770,7 +771,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                             </span>
                           )}
                         </li>
-
 
                         <li>
                           {product.outermeterial && (
@@ -818,7 +818,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                                     />
                                   )}
                                 </div>
-
                                 <div className="review-content">
                                   <div className="review-top-wrap">
                                     <div className="review-left">
@@ -960,7 +959,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
             ))}
           </div>
         </div>
-
         <br />
       </LayoutOne>
     </Fragment>
