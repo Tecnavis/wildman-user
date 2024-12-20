@@ -5,6 +5,7 @@ import HeroSliderOne from "../../wrappers/hero-slider/HeroSliderOne";
 import FeatureIcon from "../../wrappers/feature-icon/FeatureIcon";
 import TabProduct from "../../wrappers/product/TabProduct";
 import BlogFeatured from "../../wrappers/blog-featured/BlogFeatured";
+import Categories from "../../wrappers/product/categories";
 
 const HomeFashion = () => {
   return (
@@ -22,6 +23,9 @@ const HomeFashion = () => {
 
         {/* featured icon */}
         <FeatureIcon spaceTopClass="pt-100" spaceBottomClass="pb-60" />
+
+        {/* category */}
+        <Categories spaceBottomClass="pb-60" />
 
         {/* tab product */}
         <TabProduct spaceBottomClass="pb-60" category="fashion" />

@@ -443,8 +443,8 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                             product.price *
                             (1 - product.discount / 100)
                           ).toFixed(2)}
-                        </span>
-                        <span className="old">MRP. {product.price}.00</span>
+                        </span>MRP.
+                        <span className="old"> {product.price}.00</span>
                         <p style={{ color: "green" }}>
                           You saved RS.{" "}
                           {(
@@ -465,6 +465,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       <ProductRating ratingValue={product.rating} />
                     </div>
                   </div>
+                  {product.returnpolicy === "Yes" && (
+                    <a className="" style={{ color: "red" }}>
+                      Return Policy is available{" "}
+                    </a>
+                  )}
                   <div className="pro-details-list"></div>
 
                   <div
@@ -543,34 +548,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                      Buy Now
                     </button>
                   </div><br/>
-
-                  {product.returnpolicy === "Yes" && (
-                    <a className="" style={{ color: "red" }}>
-                      Return Policy is available{" "}
-                    </a>
-                  )}
-
-                  <div className="pro-details-meta">
-                    <a className="des">Main Category : </a>
-                    <ul>
-                      <li className="des">
-                        <Link to="/shop-grid-standard">
-                          {product.mainCategory}
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="pro-details-meta">
-                    <a className="des">Sub Category : </a>
-                    <ul>
-                      <li className="des">
-                        <Link to="/shop-grid-standard">
-                          {product.subCategory}
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-
                   <hr />
                   <div style={{ lineHeight: "35px" }} className="des col-12">
                     <u>
@@ -579,20 +556,6 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                       </a>
                     </u>
                     <br />
-                    <div className="product-price">
-                      {product.gst ? (
-                        <Fragment>
-                          <span>
-                            MRP: {product.price + product.gst}/- Includes GST
-                          </span>
-                        </Fragment>
-                      ) : (
-                        <Fragment>
-                          <span>MRP: {product.price}/-</span>
-                        </Fragment>
-                      )}
-                    </div>
-                    Shipping <br />
                     {product.meterial && (
                       <span>
                         Material: {product.meterial} <br />
@@ -614,27 +577,10 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                         Brand: {product.brand} <br />
                       </span>
                     )}
-                    {/* {product.height && (
-                      <span>
-                        Height: {product.height} <br />
-                      </span>
-                    )}
-                    {product.weight && (
-                      <span>
-                        Weight: {product.weight} <br />
-                      </span>
-                    )} */}
                     {product.length && (
                       <span>
                         Dimension:(L) {product.length} ,(H) {product.height},
                         (W) {product.weight} <br />
-                      </span>
-                    )}
-                    {product.date && (
-                      <span>
-                        Date of Manufacture:{" "}
-                        {new Date(product.date).toLocaleDateString("en-GB")}{" "}
-                        <br />
                       </span>
                     )}
                     {product.compartment && (
@@ -770,6 +716,11 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                             </span>
                           )}
                         </li>
+                        <span>
+                        Date of Manufacture:{" "}
+                        {new Date(product.date).toLocaleDateString("en-GB")}{" "}
+                        <br />
+                      </span><br/>
                         <li>
                           {product.meterial && (
                             <span>
@@ -777,6 +728,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                             </span>
                           )}
                         </li>
+
 
                         <li>
                           {product.outermeterial && (
