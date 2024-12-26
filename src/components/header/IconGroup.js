@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
 import MenuCart from "./sub-components/MenuCart";
-import { fetchWishlist,fetchCustomerCart } from "../../helpers/handle_api";
+import { fetchWishlist,fetchCustomerCart,fetchProducts } from "../../helpers/handle_api";
 import { useEffect, useState } from "react";
 
 const IconGroup = ({ iconWhiteClass }) => {
@@ -12,7 +12,9 @@ const IconGroup = ({ iconWhiteClass }) => {
   //wishlist
   const [wishlistItems, setWishlistItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-
+const [products, setProducts] = useState([]);
+const [searchQuery, setSearchQuery] = useState("");
+const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("customerDetails")) {
       fetchWishlist().then((data) => {
@@ -31,6 +33,12 @@ const IconGroup = ({ iconWhiteClass }) => {
       const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
       setCartItems(guestCart);
     }
+
+    fetchProducts().then((data) => {
+      setProducts(data);
+      console.log(data, "all products");
+      
+    });
   }, []);
 
   const handleClick = e => {
@@ -45,19 +53,31 @@ const IconGroup = ({ iconWhiteClass }) => {
   };
   const { compareItems } = useSelector((state) => state.compare);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const filteredProducts = products.filter((product) =>
+      product.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    navigate("/shop-grid-no-sidebar", { state: { filteredProducts } });
+  };
   return (
     <div className={clsx("header-right-wrap", iconWhiteClass)} >
-      <div className="same-style header-search d-none d-lg-block">
+     <div className="same-style header-search d-none d-lg-block">
         <button className="search-active" onClick={e => handleClick(e)}>
           <i className="pe-7s-search" />
         </button>
         <div className="search-content">
-          <form action="#">
-            <input type="text" placeholder="Search" />
-            <button className="button-search">
-              <i className="pe-7s-search" />
-            </button>
-          </form>
+        <form onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Search Product"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="button-search" type="submit">
+            <i className="pe-7s-search" />
+          </button>
+        </form>
         </div>
       </div>
       <div className="same-style account-setting d-none d-lg-block">

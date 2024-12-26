@@ -7,7 +7,7 @@ import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import ShopTopbar from "../../wrappers/product/ShopTopbar";
-import ShopProducts from "../../wrappers/product/ShopProducts";
+import ShopProducts from "../../wrappers/product/filteredproduct";
 
 const ShopGridNoSidebar = () => {
   const [layout, setLayout] = useState("grid three-column");
@@ -66,18 +66,18 @@ const ShopGridNoSidebar = () => {
             <div className="row">
               <div className="col-lg-12">
                 {/* shop topbar default */}
-                <ShopTopbar
+                {/* <ShopTopbar
                   getLayout={getLayout}
                   getFilterSortParams={getFilterSortParams}
                   productCount={products.length}
                   sortedProductCount={currentData.length}
-                />
+                /> */}
 
                 {/* shop page content default */}
                 <ShopProducts layout={layout} products={currentData} />
 
                 {/* shop product pagination */}
-                <div className="pro-pagination-style text-center mt-30">
+                {/* <div className="pro-pagination-style text-center mt-30">
                   <Paginator
                     totalRecords={sortedProducts.length}
                     pageLimit={pageLimit}
@@ -89,7 +89,7 @@ const ShopGridNoSidebar = () => {
                     pagePrevText="«"
                     pageNextText="»"
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

@@ -383,9 +383,6 @@ const Cart = () => {
                 <div className="row">
                   <div className="col-lg-12">
                     <div className="cart-shiping-update-wrapper">
-                      <div className="cart-shiping-update">
-                        <Link to="/shop-grid-standard">Continue Shopping</Link>
-                      </div>
                       <div className="cart-clear">
                         <button
                           onClick={handleConfirmOrder}
