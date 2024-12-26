@@ -31,7 +31,12 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(""); // New state for selected image
+  const [selectedSize, setSelectedSize] = useState(null);
 
+  const handleSizeChange = (event) => {
+    setSelectedSize(event.target.value);
+  };
+  
   const navigate = useNavigate();
   useEffect(() => {
     const getProductDetails = async () => {
@@ -186,61 +191,118 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
     setQuantity((prevQuantity) => prevQuantity + 1);
   };
   // Modify the existing add to cart function to include quantity
+  // const handleAddToCart = async (product) => {
+  //   const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
+  //   if (!customerDetails) {
+  //     let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+  //     const existingProductIndex = guestCart.findIndex(
+  //       (item) => item._id === product._id
+  //     );
+  //     if (existingProductIndex > -1) {
+  //       // If product already exists, update its quantity
+  //       guestCart[existingProductIndex].quantity =
+  //         (guestCart[existingProductIndex].quantity || 0) + quantity;
+  //     } else {
+  //       // If product is new, add it with the selected quantity
+  //       guestCart.push({
+  //         ...product,
+  //         quantity: quantity,
+  //       });
+  //     }
+  //     localStorage.setItem("guestCart", JSON.stringify(guestCart));
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Added to Cart",
+  //       text: `${quantity} item(s) added to your cart.`,
+  //     });
+  //     return;
+  //   }
+  //   try {
+  //     const wishlistResponse = await fetchCustomerCart();
+  //     const existingWishlist = wishlistResponse || [];
+  //     const isProductInWishlist = existingWishlist.some(
+  //       (item) => item.productId._id === product._id
+  //     );
+  //     if (isProductInWishlist) {
+  //       Swal.fire({
+  //         icon: "info",
+  //         title: "Already in Cart",
+  //         text: "This product is already in your cart.",
+  //       });
+  //       return;
+  //     }
+  //     const cartData = {
+  //       productId: product._id,
+  //       customerId: customerDetails._id,
+  //       quantity: quantity, // Include quantity in cart data
+  //     };
+  //     await createCustomerCart(cartData);
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Added to Cart",
+  //       text: `${quantity} item(s) added to your cart.`,
+  //     });
+  //   } catch (error) {
+  //     console.log("Error adding to cart", error);
+  //   }
+  // };
   const handleAddToCart = async (product) => {
+    if (!selectedSize) {
+      Swal.fire({
+        icon: "error",
+        title: "Size Not Selected",
+        text: "Please select a size before adding the product to the cart.",
+      });
+      return;
+    }
+  
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (!customerDetails) {
       let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
       const existingProductIndex = guestCart.findIndex(
-        (item) => item._id === product._id
+        (item) => item._id === product._id && item.selectedSize === selectedSize
       );
+  
       if (existingProductIndex > -1) {
-        // If product already exists, update its quantity
         guestCart[existingProductIndex].quantity =
           (guestCart[existingProductIndex].quantity || 0) + quantity;
       } else {
-        // If product is new, add it with the selected quantity
         guestCart.push({
           ...product,
+          selectedSize, // Store the selected size
           quantity: quantity,
         });
       }
+  
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
-        text: `${quantity} item(s) added to your cart.`,
+        text: `${quantity} item(s) of size ${selectedSize} added to your cart.`,
       });
       return;
     }
+  
     try {
-      const wishlistResponse = await fetchCustomerCart();
-      const existingWishlist = wishlistResponse || [];
-      const isProductInWishlist = existingWishlist.some(
-        (item) => item.productId._id === product._id
-      );
-      if (isProductInWishlist) {
-        Swal.fire({
-          icon: "info",
-          title: "Already in Cart",
-          text: "This product is already in your cart.",
-        });
-        return;
-      }
       const cartData = {
         productId: product._id,
         customerId: customerDetails._id,
-        quantity: quantity, // Include quantity in cart data
+        size: selectedSize,
+        quantity: quantity,
       };
+  
       await createCustomerCart(cartData);
+  
       Swal.fire({
         icon: "success",
         title: "Added to Cart",
-        text: `${quantity} item(s) added to your cart.`,
+        text: `${quantity} item(s) of size ${selectedSize} added to your cart.`,
       });
     } catch (error) {
       console.log("Error adding to cart", error);
     }
   };
+  
   //buy now
   const handleBuyNow = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -507,7 +569,7 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                     <div className="pro-details-color-wrap">
                       <a className="des"> Size :</a>
                     </div>
-                    {product.sizes.map((size) => (
+                    {/* {product.sizes.map((size) => (
                       <div className="pro-details-size" key={size._id}>
                         <div className="pro-details-size-content">
                           <label className={`pro-details-size-content--single`}>
@@ -516,7 +578,23 @@ const ProductView = ({ spaceTopClass, spaceBottomClass }) => {
                           </label>
                         </div>
                       </div>
-                    ))}
+                    ))} */}
+                    {product.sizes.map((size) => (
+  <div className="pro-details-size" key={size._id}>
+    <div className="pro-details-size-content">
+      <label className={`pro-details-size-content--single`}>
+        <input
+          type="radio"
+          value={size.size}
+          name="size"
+          onChange={handleSizeChange}
+        />
+        <span className="size-name">{size.size}</span>
+      </label>
+    </div>
+  </div>
+))}
+
                   </div>
                   <div
                     className="pro-details-size-color"

@@ -40,7 +40,24 @@ const Cart = () => {
       setCustomerCart(cartWithQuantity);
     }
   }, []);
-
+ // Initialize selectedSizes with first available size for each product
+ useEffect(() => {
+  const initialSizes = {};
+  customerCart.forEach(item => {
+    // If item already has a selected size, use it
+    if (item.selectedSize) {
+      initialSizes[item._id] = item.selectedSize;
+    } 
+    // Otherwise use the first available size
+    else if (item.sizes || (item.productId && item.productId.sizes)) {
+      const sizes = item.sizes || item.productId.sizes;
+      if (sizes && sizes.length > 0) {
+        initialSizes[item._id] = sizes[0].size;
+      }
+    }
+  });
+  setSelectedSizes(initialSizes);
+}, [customerCart]);
   //increment quantity
   const [checkoutDetailss, setCheckoutDetails] = useState({
     totalQuantity: 0,
@@ -101,39 +118,28 @@ const Cart = () => {
       });
       return;
     }
-    // Check if all items with non-zero quantity have a size selected
-    const missingSizes = customerCart.filter(
-      (item) => item.quantity > 0 && !selectedSizes[item._id]
-    );
 
-    if (missingSizes.length > 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Size Selection Required",
-        text: "Please select a size for all items before confirming the order.",
-      });
-      return;
-    }
+    // All items will have a size due to auto-selection in useEffect
     const checkoutDetails = customerCart
       .filter((item) => item.quantity > 0)
       .map((item) => ({
         productDetails: {
-          id: item.productId._id,
-          color: item.color || item.productId.color,
-          title: item.title || item.productId.title,
-          mainCategory: item.mainCategory || item.productId.mainCategory,
-          subCategory: item.subCategory || item.productId.subCategory,
-          price: item.price || item.productId.price,
-          coverImage: item.coverimage || item.productId.coverimage,
-          discount: item.discount || item.productId.discount,
-          gst: item.gst || item.productId.gst,
+          id: item.productId?._id || item._id,
+          color: item.color || item.productId?.color,
+          title: item.title || item.productId?.title,
+          mainCategory: item.mainCategory || item.productId?.mainCategory,
+          subCategory: item.subCategory || item.productId?.subCategory,
+          price: item.price || item.productId?.price,
+          coverImage: item.coverimage || item.productId?.coverimage,
+          discount: item.discount || item.productId?.discount,
+          gst: item.gst || item.productId?.gst,
         },
         sizeDetails: {
           sizeId: item._id,
-          size: selectedSizes[item._id] || item.size,
+          size: selectedSizes[item._id],
           quantity: item.quantity,
-          total: (item.price || item.productId.price) * item.quantity || 0,
-          discount: item.discount || item.productId.discount,
+          total: (item.price || item.productId?.price) * item.quantity || 0,
+          discount: item.discount || item.productId?.discount,
         },
         totalQuantity,
         totalAmount,
@@ -147,6 +153,7 @@ const Cart = () => {
       text: "Order confirmed!",
     });
   };
+
 
   const isConfirmOrderDisabled = calculateTotalQuantity === 0;
   const checkoutDetails = JSON.parse(
@@ -284,35 +291,31 @@ const Cart = () => {
                                 <p>{item.color || item.productId.color}</p>
                               </td>
                               <td>
-                                <div className="cart-item-variation">
-                                  <div className="flex gap-2 mt-2">
-                                    {(
-                                      item.sizes ||
-                                      item.productId.sizes ||
-                                      []
-                                    ).map((sizeItem) => (
-                                      <button
-                                        style={{ marginLeft: "2px" }}
-                                        key={sizeItem._id}
-                                        onClick={() =>
-                                          handleSizeSelect(
-                                            item._id,
-                                            sizeItem.size
-                                          )
-                                        }
-                                        className={`px-3 py-2 rounded text-sm font-medium transition-colors duration-200 border border-gray-400 shadow-sm ${
-                                          selectedSizes[item._id] ===
-                                          sizeItem.size
-                                            ? "bg-gray-100 text-red border-red-500"
-                                            : "bg-white hover:bg-gray-100 text-gray-800"
-                                        }`}
-                                      >
-                                        {sizeItem.size}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </td>
+      <div className="cart-item-variation">
+        <div className="flex gap-2 mt-2">
+          {/* Show all sizes if no specific size was selected during add to cart */}
+          {(item.selectedSize ? 
+            // If specific size was selected, show only that size
+            [{ _id: 'selected', size: item.selectedSize }] : 
+            // Otherwise show all available sizes
+            (item.sizes || item.productId?.sizes || [])
+          ).map((sizeItem) => (
+            <button
+              style={{ marginLeft: "2px" }}
+              key={sizeItem._id}
+              onClick={() => handleSizeSelect(item._id, sizeItem.size)}
+              className={`px-3 py-2 rounded text-sm font-medium transition-colors duration-200 border border-gray-400 shadow-sm ${
+                selectedSizes[item._id] === sizeItem.size
+                  ? "bg-gray-100 text-red border-red-500"
+                  : "bg-white hover:bg-gray-100 text-gray-800"
+              }`}
+            >
+              {sizeItem.size}
+            </button>
+          ))}
+        </div>
+      </div>
+    </td>
                               <td className="product-price-cart">
                                 <span className="amount">
                                   ₹.{" "}
