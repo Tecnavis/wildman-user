@@ -3,7 +3,11 @@ import Swal from 'sweetalert2';
 
 
 // export const  URL = `${process.env.BASE_URL}`;
-
+//fetch all coupons
+export const fetchCoupons = async () => {
+  const response = await axios.get(`${URL}/coupon`);
+  return response.data;
+}
 
 export const  URL = `http://localhost:3000`;
 // export const  URL = `https://api.wildmanpremium.com`;
