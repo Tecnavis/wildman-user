@@ -3,14 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import {fetchCustomerCart,URL,fetchCoupons,deleteCustomerCart,} from "../../helpers/handle_api";
+import { fetchCustomerCart,URL,fetchCoupons,deleteCustomerCart,} from "../../helpers/handle_api";
 import Swal from "sweetalert2";
 import "./style.scss";
 const Cart = () => {
   const navigate = useNavigate();
   const [customerCart, setCustomerCart] = useState([]);
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
-const [coupons, setCoupons] = useState([]);
+  const [coupons, setCoupons] = useState([]);
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
     if (customerDetails) {
@@ -33,7 +33,7 @@ const [coupons, setCoupons] = useState([]);
       }));
       setCustomerCart(cartWithQuantity);
     }
- fetchCoupons()
+    fetchCoupons()
       .then((res) => {
         setCoupons(res);
       })
@@ -41,24 +41,24 @@ const [coupons, setCoupons] = useState([]);
         console.log(err);
       });
   }, []);
- // Initialize selectedSizes with first available size for each product
- useEffect(() => {
-  const initialSizes = {};
-  customerCart.forEach(item => {
-    // If item already has a selected size, use it
-    if (item.selectedSize) {
-      initialSizes[item._id] = item.selectedSize;
-    } 
-    // Otherwise use the first available size
-    else if (item.sizes || (item.productId && item.productId.sizes)) {
-      const sizes = item.sizes || item.productId.sizes;
-      if (sizes && sizes.length > 0) {
-        initialSizes[item._id] = sizes[0].size;
+  // Initialize selectedSizes with first available size for each product
+  useEffect(() => {
+    const initialSizes = {};
+    customerCart.forEach((item) => {
+      // If item already has a selected size, use it
+      if (item.selectedSize) {
+        initialSizes[item._id] = item.selectedSize;
       }
-    }
-  });
-  setSelectedSizes(initialSizes);
-}, [customerCart]);
+      // Otherwise use the first available size
+      else if (item.sizes || (item.productId && item.productId.sizes)) {
+        const sizes = item.sizes || item.productId.sizes;
+        if (sizes && sizes.length > 0) {
+          initialSizes[item._id] = sizes[0].size;
+        }
+      }
+    });
+    setSelectedSizes(initialSizes);
+  }, [customerCart]);
   //increment quantity
   const [checkoutDetailss, setCheckoutDetails] = useState({
     totalQuantity: 0,
@@ -82,7 +82,9 @@ const [coupons, setCoupons] = useState([]);
         item._id === productId && item.quantity > 0
           ? { ...item, quantity: item.quantity - 1 }
           : item
-      ));};
+      )
+    );
+  };
   //delete cart items
   const handleDeleteCustomer = (productId) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -172,10 +174,12 @@ const [coupons, setCoupons] = useState([]);
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login-register");
-        }});
+        }
+      });
     } else {
       navigate("/checkout");
-    }};
+    }
+  };
   useEffect(() => {
     // Calculate updated checkout details
     const updatedCheckoutDetails = {
@@ -222,9 +226,10 @@ const [coupons, setCoupons] = useState([]);
   const totalDiscount = calculateTotalDiscount();
   // Function to get coupon for a specific product
   const getProductCoupon = (productId) => {
-    return coupons.find(coupon => 
-      coupon.status === 'active' && 
-      coupon.products.some(product => product._id === productId)
+    return coupons.find(
+      (coupon) =>
+        coupon.status === "active" &&
+        coupon.products.some((product) => product._id === productId)
     );
   };
 
@@ -281,14 +286,29 @@ const [coupons, setCoupons] = useState([]);
                                   />
                                 </Link>
                                 {getProductCoupon(item.productId._id) && (
-          <div className="coupon-section mt-2">
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
-              <p className="font-medium">Coupon Available!</p>
-              <p className="text-sm">Code: {getProductCoupon(item.productId._id).code}</p>
-              <p className="text-xs">Get {getProductCoupon(item.productId._id).discount}% off</p>
-            </div>
-          </div>
-        )}
+                                  <div className="coupon-section mt-2">
+                                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
+                                      <p className="font-medium">
+                                        Coupon Available!
+                                      </p>
+                                      <p className="text-sm">
+                                        Code:{" "}
+                                        {
+                                          getProductCoupon(item.productId._id)
+                                            .code
+                                        }
+                                      </p>
+                                      <p className="text-xs">
+                                        Get{" "}
+                                        {
+                                          getProductCoupon(item.productId._id)
+                                            .discount
+                                        }
+                                        % off
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
                               </td>
                               <td className="product-name">
                                 <Link to="">
@@ -298,31 +318,44 @@ const [coupons, setCoupons] = useState([]);
                                 <p>{item.color || item.productId.color}</p>
                               </td>
                               <td>
-      <div className="cart-item-variation">
-        <div className="flex gap-2 mt-2">
-          {/* Show all sizes if no specific size was selected during add to cart */}
-          {(item.selectedSize ? 
-            // If specific size was selected, show only that size
-            [{ _id: 'selected', size: item.selectedSize }] : 
-            // Otherwise show all available sizes
-            (item.sizes || item.productId?.sizes || [])
-          ).map((sizeItem) => (
-            <button
-              style={{ marginLeft: "2px" }}
-              key={sizeItem._id}
-              onClick={() => handleSizeSelect(item._id, sizeItem.size)}
-              className={`px-3 py-2 rounded text-sm font-medium transition-colors duration-200 border border-gray-400 shadow-sm ${
-                selectedSizes[item._id] === sizeItem.size
-                  ? "bg-gray-100 text-red border-red-500"
-                  : "bg-white hover:bg-gray-100 text-gray-800"
-              }`}
-            >
-              {sizeItem.size}
-            </button>
-          ))}
-        </div>
-      </div>
-    </td>
+                                <div className="cart-item-variation">
+                                  <div className="flex gap-2 mt-2">
+                                    {/* Show all sizes if no specific size was selected during add to cart */}
+                                    {(item.selectedSize
+                                      ? // If specific size was selected, show only that size
+                                        [
+                                          {
+                                            _id: "selected",
+                                            size: item.selectedSize,
+                                          },
+                                        ]
+                                      : // Otherwise show all available sizes
+                                        item.sizes ||
+                                        item.productId?.sizes ||
+                                        []
+                                    ).map((sizeItem) => (
+                                      <button
+                                        style={{ marginLeft: "2px" }}
+                                        key={sizeItem._id}
+                                        onClick={() =>
+                                          handleSizeSelect(
+                                            item._id,
+                                            sizeItem.size
+                                          )
+                                        }
+                                        className={`px-3 py-2 rounded text-sm font-medium transition-colors duration-200 border border-gray-400 shadow-sm ${
+                                          selectedSizes[item._id] ===
+                                          sizeItem.size
+                                            ? "bg-gray-100 text-red border-red-500"
+                                            : "bg-white hover:bg-gray-100 text-gray-800"
+                                        }`}
+                                      >
+                                        {sizeItem.size}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </td>
                               <td className="product-price-cart">
                                 <span className="amount">
                                   ₹.{" "}
@@ -362,14 +395,18 @@ const [coupons, setCoupons] = useState([]);
                                 </div>
                               </td>
                               <td className="product-subtotal">
-                                ₹{item.quantity *(item.price
+                                ₹
+                                {item.quantity *
+                                  (item.price
                                     ? (
                                         item.price *
                                         (1 - (item.discount || 0) / 100)
                                       ).toFixed(2)
                                     : (
                                         item.productId.price *
-                                        (1 - (item.productId.discount || 0) / 100) ).toFixed(2))}
+                                        (1 -
+                                          (item.productId.discount || 0) / 100)
+                                      ).toFixed(2))}
                               </td>
                               <td className="product-remove">
                                 <button
