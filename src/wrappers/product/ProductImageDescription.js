@@ -7,7 +7,6 @@ import {
   fetchProductDetails,
   fetchProducts,
   fetchWishlist,
-  fetchCoupons,
   URL,
 } from "../../helpers/handle_api";
 import { Carousel } from "react-bootstrap";
@@ -76,13 +75,6 @@ const [coupons, setCoupons] = useState([]);
       })
       .catch((err) => {
         console.log("Error fetching products:", err);
-      });
-      fetchCoupons()
-      .then((res) => {
-        setCoupons(res);
-      })
-      .catch((err) => {
-        console.log("Error fetching coupons:", err);
       });
   }, []);
 
@@ -446,16 +438,6 @@ const [coupons, setCoupons] = useState([]);
     }
     return pairs;
   };
-  const checkCouponAvailability = (productId) => {
-    return coupons.some(coupon => {
-      // Check if coupon is active
-      if (coupon.status === 'active') {
-        // Check if the product exists in the coupon's products array by comparing _id
-        return coupon.products.some(product => product._id === productId);
-      }
-      return false;
-    });
-  };
   return (
     <Fragment>
       <SEO titleTemplate="Product Page" description="Product details page." />
@@ -566,11 +548,6 @@ const [coupons, setCoupons] = useState([]);
                       <span>RS. {product.price.toFixed(2)}</span>
                     )}
                   </div>
-                  {checkCouponAvailability(product._id) && (
-                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative mt-2 text-center">
-                    Coupon available for this product
-                  </div>
-                )}
                   <br />
                   <div className="pro-details-rating-wrap">
                     <div className="pro-details-rating">
