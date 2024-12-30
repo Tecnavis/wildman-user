@@ -3,25 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import {
-  fetchCustomerCart,
-  URL,
-  fetchCoupons,
-  deleteCustomerCart,
-} from "../../helpers/handle_api";
+import {fetchCustomerCart,URL,fetchCoupons,deleteCustomerCart,} from "../../helpers/handle_api";
 import Swal from "sweetalert2";
 import "./style.scss";
-
 const Cart = () => {
   const navigate = useNavigate();
   const [customerCart, setCustomerCart] = useState([]);
-  const [appliedCoupons, setAppliedCoupons] = useState({});
-
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
 const [coupons, setCoupons] = useState([]);
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-
     if (customerDetails) {
       fetchCustomerCart()
         .then((res) => {
@@ -91,13 +82,10 @@ const [coupons, setCoupons] = useState([]);
         item._id === productId && item.quantity > 0
           ? { ...item, quantity: item.quantity - 1 }
           : item
-      )
-    );
-  };
+      ));};
   //delete cart items
   const handleDeleteCustomer = (productId) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-
     if (customerDetails) {
       deleteCustomerCart(productId)
         .then(() => {
@@ -128,7 +116,6 @@ const [coupons, setCoupons] = useState([]);
       });
       return;
     }
-
     // All items will have a size due to auto-selection in useEffect
     const checkoutDetails = customerCart
       .filter((item) => item.quantity > 0)
@@ -154,7 +141,6 @@ const [coupons, setCoupons] = useState([]);
         totalQuantity,
         totalAmount,
       }));
-
     localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
     setIsOrderConfirmed(true);
     Swal.fire({
@@ -163,8 +149,6 @@ const [coupons, setCoupons] = useState([]);
       text: "Order confirmed!",
     });
   };
-
-
   const isConfirmOrderDisabled = calculateTotalQuantity === 0;
   const checkoutDetails = JSON.parse(
     localStorage.getItem("checkoutDetails")
@@ -179,7 +163,6 @@ const [coupons, setCoupons] = useState([]);
 
   const handleProceedToCheckout = () => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-
     if (!customerDetails) {
       Swal.fire({
         icon: "warning",
@@ -189,12 +172,10 @@ const [coupons, setCoupons] = useState([]);
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login-register");
-        }
-      });
+        }});
     } else {
       navigate("/checkout");
-    }
-  };
+    }};
   useEffect(() => {
     // Calculate updated checkout details
     const updatedCheckoutDetails = {
@@ -219,7 +200,6 @@ const [coupons, setCoupons] = useState([]);
       [productId]: size,
     }));
   };
-
   const calculateTotalPrice = () => {
     return customerCart.reduce((total, item) => {
       const price = item.price || item.productId.price;
@@ -240,19 +220,6 @@ const [coupons, setCoupons] = useState([]);
 
   const totalAmount = calculateTotalPrice();
   const totalDiscount = calculateTotalDiscount();
-  const checkCouponAvailability = (productId) => {
-    return coupons.some(coupon => {
-      // Check if coupon is active
-      if (coupon.status === 'active') {
-        // Check if the product exists in the coupon's products array by comparing _id
-        return coupon.products.some(product => product._id === productId);
-      }
-      return false;
-    });
-  };
-
-  // ... (keep all your existing state and other functions)
-
   // Function to get coupon for a specific product
   const getProductCoupon = (productId) => {
     return coupons.find(coupon => 
@@ -395,20 +362,15 @@ const [coupons, setCoupons] = useState([]);
                                 </div>
                               </td>
                               <td className="product-subtotal">
-                                ₹
-                                {item.quantity *
-                                  (item.price
+                                ₹{item.quantity *(item.price
                                     ? (
                                         item.price *
                                         (1 - (item.discount || 0) / 100)
                                       ).toFixed(2)
                                     : (
                                         item.productId.price *
-                                        (1 -
-                                          (item.productId.discount || 0) / 100)
-                                      ).toFixed(2))}
+                                        (1 - (item.productId.discount || 0) / 100) ).toFixed(2))}
                               </td>
-
                               <td className="product-remove">
                                 <button
                                   onClick={() => handleDeleteCustomer(item._id)}
@@ -533,5 +495,4 @@ const [coupons, setCoupons] = useState([]);
     </Fragment>
   );
 };
-
 export default Cart;
