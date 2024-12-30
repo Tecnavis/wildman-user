@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { URL } from "../../helpers/handle_api";
 import SectionTitle from "../../components/section-title/SectionTitle";
 
@@ -36,11 +36,13 @@ const CategoryBasedProducts = () => {
             <div className="col-6 col-sm-6 col-md-6 col-lg-3" key={product.productId}>
               <div className="product-wrap">
                 <div className="product-img">
+                  <Link to={`/productview/${product._id}`}>
                   <img
                     className="default-img"
                     src={`${URL}/images/${product.coverimage}`}
                     alt={product.title}
                   />
+                  </Link>
                 </div>
                 <div className="product-content text-center">
                   <h5 className="des">{product.title}</h5>
