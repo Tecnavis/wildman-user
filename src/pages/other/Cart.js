@@ -6,6 +6,7 @@ import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import {
   fetchCustomerCart,
   URL,
+  fetchCoupons,
   deleteCustomerCart,
 } from "../../helpers/handle_api";
 import Swal from "sweetalert2";
@@ -14,8 +15,10 @@ import "./style.scss";
 const Cart = () => {
   const navigate = useNavigate();
   const [customerCart, setCustomerCart] = useState([]);
-  const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
+  const [appliedCoupons, setAppliedCoupons] = useState({});
 
+  const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
+const [coupons, setCoupons] = useState([]);
   useEffect(() => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
 
@@ -39,6 +42,13 @@ const Cart = () => {
       }));
       setCustomerCart(cartWithQuantity);
     }
+ fetchCoupons()
+      .then((res) => {
+        setCoupons(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
  // Initialize selectedSizes with first available size for each product
  useEffect(() => {
@@ -230,6 +240,27 @@ const Cart = () => {
 
   const totalAmount = calculateTotalPrice();
   const totalDiscount = calculateTotalDiscount();
+  const checkCouponAvailability = (productId) => {
+    return coupons.some(coupon => {
+      // Check if coupon is active
+      if (coupon.status === 'active') {
+        // Check if the product exists in the coupon's products array by comparing _id
+        return coupon.products.some(product => product._id === productId);
+      }
+      return false;
+    });
+  };
+
+  // ... (keep all your existing state and other functions)
+
+  // Function to get coupon for a specific product
+  const getProductCoupon = (productId) => {
+    return coupons.find(coupon => 
+      coupon.status === 'active' && 
+      coupon.products.some(product => product._id === productId)
+    );
+  };
+
   return (
     <Fragment>
       <SEO
@@ -282,6 +313,15 @@ const Cart = () => {
                                     alt=""
                                   />
                                 </Link>
+                                {getProductCoupon(item.productId._id) && (
+          <div className="coupon-section mt-2">
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
+              <p className="font-medium">Coupon Available!</p>
+              <p className="text-sm">Code: {getProductCoupon(item.productId._id).code}</p>
+              <p className="text-xs">Get {getProductCoupon(item.productId._id).discount}% off</p>
+            </div>
+          </div>
+        )}
                               </td>
                               <td className="product-name">
                                 <Link to="">
