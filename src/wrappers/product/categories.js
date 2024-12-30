@@ -15,7 +15,7 @@ const Categories = () => {
   return (
     <div className="container">
         <SectionTitle
-                  titleText="Categories"
+                  titleText="All Categories"
                   positionClass="text-center"
                   spaceClass="mb-55"
                 />
@@ -36,9 +36,12 @@ const Categories = () => {
                 <div className="product-price">
                   {/* <span>₹780.00</span> */}
                 </div>
-                <h5 className="des">
-                  <Link to="/">{item.name}</Link>
-                </h5>
+                <div className="product-content text-center">
+  <h5 className="des">
+    <Link to={`/category/${item.name}`}>{item.name}</Link>
+  </h5>
+</div>
+
               </div>
             </div>
           </div>

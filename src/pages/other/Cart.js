@@ -401,7 +401,7 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="row" hidden={!isOrderConfirmed}>
-                  {/* <div className="col-lg-4 col-md-6">
+                  <div className="col-lg-6 col-md-12">
                     <div className="discount-code-wrapper">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gray">
@@ -418,8 +418,8 @@ const Cart = () => {
                         </form>
                       </div>
                     </div>
-                  </div> */}
-                  <div className="col-lg-12 col-md-12">
+                  </div>
+                  <div className="col-lg-6 col-md-12">
                     <div className="grand-totall">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gary-cart">
