@@ -5,7 +5,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { useForm } from "../../helpers/useForm";
 import Swal from "sweetalert2";
-import { URL } from "../../helpers/handle_api";
+import { URL ,fetchCoupons} from "../../helpers/handle_api";
 import axios from "axios";
 import "./style.scss";
 
@@ -13,6 +13,7 @@ const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [isGiftWrapping, setIsGiftWrapping] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
+  const [coupons, setCoupons] = useState([]);
   const cartItems = JSON.parse(localStorage.getItem("checkoutDetails")) || [];
   const TotalAmount = cartItems.length > 0 ? cartItems[0].totalAmount : 0;
   const navigate = useNavigate();
@@ -68,6 +69,13 @@ const Checkout = () => {
         deliveryDate: "Not Delivered",
       }));
     }
+    fetchCoupons()
+      .then((res) => {
+        setCoupons(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [values.deliveryStatus, setValues]);
 
   const handleSubmit = async (e) => {
@@ -201,7 +209,13 @@ const Checkout = () => {
       console.log("Payment method:", selectedPaymentMethod);
     }
   };
-
+  const getProductCoupon = (productId) => {
+    return coupons.find(
+      (coupon) =>
+        coupon.status === "active" &&
+        coupon.products.some((product) => product._id === productId)
+    );
+  };
   return (
     <Fragment>
       <SEO
@@ -397,8 +411,9 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-middle">
+                        {cartItems.map((item, index) => (
                           <ul>
-                            {cartItems.map((item, index) => (
+                           
                               <li key={index}>
                                 <span className="order-middle-left">
                                   <img
@@ -414,9 +429,54 @@ const Checkout = () => {
                                 <span className="order-price">
                                 ₹{item.sizeDetails.total.toFixed(2)}
                                 </span>
+                                
                               </li>
-                            ))}
+                              
+                              {getProductCoupon(item.productDetails.id) && (
+                                  <div className="coupon-section mt-2">
+                                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
+                                      <p className="font-medium">
+                                        Coupon Available!
+                                      </p>
+                                      <p className="text-sm">
+                                        Code:{" "}
+                                        {
+                                          getProductCoupon(item.productDetails.id)
+                                            .code
+                                        }
+                                      </p>
+                                      <p className="text-xs">
+                                        Get{" "}
+                                        {
+                                          getProductCoupon(item.productDetails.id)
+                                            .discount
+                                        }
+                                        % off
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}<br/>
+                                <div className="col-lg-12 col-md-12">
+                    <div className="discount-code-wrapper">
+                      <div className="title-wrap">
+                        <h4 className="cart-bottom-title section-bg-gray">
+                          Use Coupon Code
+                        </h4>
+                      </div>
+                      <div className="discount-code">
+                        <p>Enter your coupon code if you have one.</p>
+                        <form>
+                          <input type="text" required name="name" />
+                          <button className="cart-btn-2" type="submit">
+                            Apply Coupon
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                             
                           </ul>
+                                ))}
                         </div>
                         <div className="your-order-bottom">
                           <ul style={{ marginBottom: "10px" }}>
