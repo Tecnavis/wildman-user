@@ -24,8 +24,6 @@ const Checkout = () => {
     localStorage.getItem("checkoutDetails")
   ) || { selectedProducts: [], totalAmount: 0, totalQuantity: 0 };
   const GIFT_WRAP_PRICE = 30; // Gift wrapping price
-
-
     // Function to calculate the discounted amount for a product
     const calculateDiscountedAmount = (item) => {
       const coupon = getProductCoupon(item.productDetails.id);
@@ -35,13 +33,13 @@ const Checkout = () => {
       }
       return item.totalAmount;
     };
+    // Function to calculate total amount including discounts
     const calculateTotal = () => {
       const subtotal = cartItems.reduce((acc, item) => acc + calculateDiscountedAmount(item), 0);
       const gstTotal = cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0);
       const giftWrapCost = isGiftWrapping ? GIFT_WRAP_PRICE : 0;
       return (subtotal + giftWrapCost + gstTotal).toFixed(2);
     };
-  
     // Function to handle coupon application
     const handleApplyCoupon = (e, productId) => {
       e.preventDefault();
@@ -125,13 +123,7 @@ const Checkout = () => {
     e.preventDefault();
 
     // Validation for required fields
-    const requiredFields = [
-      "customerName",
-      "address",
-      "phone",
-      "email",
-      "Pincode",
-    ];
+    const requiredFields = ["customerName", "address", "phone", "email", "Pincode"];
     const missingFields = requiredFields.filter((field) => !values[field]);
 
     if (missingFields.length > 0) {
@@ -149,14 +141,19 @@ const Checkout = () => {
     if (selectedPaymentMethod === "Razorpay") {
       await initiatePayment();
     }
+    
     try {
-      // Prepare order data with explicit gift fields
+      // Calculate final total amount
+      const finalAmount = parseFloat(calculateTotal());
+      // Prepare order data with explicit gift fields and discounted total
       const orderData = {
         ...values,
-        totalAmount: TotalAmount + (isGiftWrapping ? GIFT_WRAP_PRICE : 0),
-        gift: isGiftWrapping, // Explicitly set gift status
-        giftMessage: isGiftWrapping ? giftMessage : "", // Explicitly set gift message
+        totalAmount: finalAmount,
+        gift: isGiftWrapping,
+        giftMessage: isGiftWrapping ? giftMessage : "",
+        appliedCoupons: appliedCoupons, // Store which coupons were applied
       };
+
       const response = await axios.post(`${URL}/customerorder`, orderData);
 
       if (response.status === 201) {
@@ -177,6 +174,7 @@ const Checkout = () => {
       });
     }
   };
+
   // Load Razorpay script
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -195,53 +193,52 @@ const Checkout = () => {
       Swal.fire("Failed to load payment gateway. Please try again.");
       return;
     }
+   // Calculate final amount in paise (Razorpay requires amount in paise)
+   const finalAmount = Math.round(parseFloat(calculateTotal()) * 100);
 
-    const orderResponse = await axios.post(`${URL}/razorpay`, {
-      amount:
-        values.totalAmount * 100 + (isGiftWrapping ? GIFT_WRAP_PRICE * 100 : 0),
-      currency: "INR",
-    });
+   const orderResponse = await axios.post(`${URL}/razorpay`, {
+     amount: finalAmount,
+     currency: "INR",
+   });
+   if (orderResponse.status !== 200) {
+    Swal.fire("Error", "Failed to create order. Please try again.", "error");
+    return;
+  }
 
-    if (orderResponse.status !== 200) {
-      Swal.fire("Error", "Failed to create order. Please try again.", "error");
-      return;
-    }
+  const { amount, id: order_id, currency } = orderResponse.data;
+  const options = {
+    key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+    amount: amount.toString(),
+    currency,
+    name: "Wild man",
+    description: "Purchase",
+    order_id,
+    handler: async (response) => {
+      const data = {
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+      };
 
-    const { amount, id: order_id, currency } = orderResponse.data;
-    const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-      amount: amount.toString(),
-      currency,
-      name: "Wild man",
-      description: "Purchase",
-      order_id,
-      handler: async (response) => {
-        const data = {
-          // razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-        };
-
-        const validateResponse = await axios.post(`${URL}/razorpay`, data);
-        if (validateResponse.data.success) {
-          Swal.fire("Success", "Payment successful", "success");
-        } else {
-          Swal.fire("Error", "Payment verification failed", "error");
-        }
-      },
-      prefill: {
-        name: values.customerName,
-        email: values.email,
-        contact: values.phone,
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+      const validateResponse = await axios.post(`${URL}/razorpay`, data);
+      if (validateResponse.data.success) {
+        Swal.fire("Success", "Payment successful", "success");
+      } else {
+        Swal.fire("Error", "Payment verification failed", "error");
+      }
+    },
+    prefill: {
+      name: values.customerName,
+      email: values.email,
+      contact: values.phone,
+    },
+    theme: {
+      color: "#3399cc",
+    },
   };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
+};
 
   const handleSubmits = async (e) => {
     e.preventDefault();
@@ -542,23 +539,6 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-total">
-                          {/* <ul>
-                            <li className="order-total">Total</li>
-                            <li>
-                            ₹
-                              {(
-                                cartItems.reduce(
-                                  (acc, item) => acc + item.totalAmount,
-                                  0
-                                ) +
-                                (isGiftWrapping ? GIFT_WRAP_PRICE : 0) +
-                                cartItems.reduce(
-                                  (acc, item) => acc + item.productDetails.gst,
-                                  0
-                                )
-                              ).toFixed(2)}
-                            </li>
-                          </ul> */}
                            <div className="your-order-total">
       <ul>
         <li className="order-total">Total</li>
