@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { URL ,fetchCoupons} from "../../helpers/handle_api";
 import axios from "axios";
 import "./style.scss";
-
+////all sett
 const Checkout = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [isGiftWrapping, setIsGiftWrapping] = useState(false);
@@ -17,11 +17,54 @@ const Checkout = () => {
   const cartItems = JSON.parse(localStorage.getItem("checkoutDetails")) || [];
   const TotalAmount = cartItems.length > 0 ? cartItems[0].totalAmount : 0;
   const navigate = useNavigate();
+  const [appliedCoupons, setAppliedCoupons] = useState({});
+  const [couponCode, setCouponCode] = useState("");
   const customer = JSON.parse(localStorage.getItem("customerDetails")) || {};
   const selectedProduct = JSON.parse(
     localStorage.getItem("checkoutDetails")
   ) || { selectedProducts: [], totalAmount: 0, totalQuantity: 0 };
   const GIFT_WRAP_PRICE = 30; // Gift wrapping price
+
+
+    // Function to calculate the discounted amount for a product
+    const calculateDiscountedAmount = (item) => {
+      const coupon = getProductCoupon(item.productDetails.id);
+      if (coupon && appliedCoupons[item.productDetails.id]) {
+        const discount = (item.totalAmount * coupon.discount) / 100;
+        return item.totalAmount - discount;
+      }
+      return item.totalAmount;
+    };
+    const calculateTotal = () => {
+      const subtotal = cartItems.reduce((acc, item) => acc + calculateDiscountedAmount(item), 0);
+      const gstTotal = cartItems.reduce((acc, item) => acc + item.productDetails.gst, 0);
+      const giftWrapCost = isGiftWrapping ? GIFT_WRAP_PRICE : 0;
+      return (subtotal + giftWrapCost + gstTotal).toFixed(2);
+    };
+  
+    // Function to handle coupon application
+    const handleApplyCoupon = (e, productId) => {
+      e.preventDefault();
+      const coupon = getProductCoupon(productId);
+      if (coupon && coupon.code === couponCode) {
+        setAppliedCoupons(prev => ({
+          ...prev,
+          [productId]: true
+        }));
+        setCouponCode("");
+        Swal.fire({
+          icon: "success",
+          title: "Coupon Applied",
+          text: `Discount of ${coupon.discount}% has been applied!`
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Coupon",
+          text: "Please enter a valid coupon code."
+        });
+      }
+    };
   const [values, handleChange, setValues] = useForm({
     customerName: "",
     address: "",
@@ -411,73 +454,50 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-middle">
-                        {cartItems.map((item, index) => (
-                          <ul>
-                           
-                              <li key={index}>
-                                <span className="order-middle-left">
-                                  <img
-                                    src={`${URL}/images/${item.productDetails.coverImage}`}
-                                    style={{
-                                      width: "60px",
-                                      marginRight: "10px",
-                                    }}
-                                  />
-                                  {item.productDetails.mainCategory} X{" "}
-                                  {item.sizeDetails.quantity}
-                                </span>{" "}
-                                <span className="order-price">
-                                ₹{item.sizeDetails.total.toFixed(2)}
-                                </span>
-                                
-                              </li>
-                              
-                              {getProductCoupon(item.productDetails.id) && (
-                                  <div className="coupon-section mt-2">
-                                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
-                                      <p className="font-medium">
-                                        Coupon Available!
-                                      </p>
-                                      <p className="text-sm">
-                                        Code:{" "}
-                                        {
-                                          getProductCoupon(item.productDetails.id)
-                                            .code
-                                        }
-                                      </p>
-                                      <p className="text-xs">
-                                        Get{" "}
-                                        {
-                                          getProductCoupon(item.productDetails.id)
-                                            .discount
-                                        }
-                                        % off
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}<br/>
-                                <div className="col-lg-12 col-md-12">
-                    <div className="discount-code-wrapper">
-                      <div className="title-wrap">
-                        <h4 className="cart-bottom-title section-bg-gray">
-                          Use Coupon Code
-                        </h4>
-                      </div>
-                      <div className="discount-code">
-                        <p>Enter your coupon code if you have one.</p>
-                        <form>
-                          <input type="text" required name="name" />
-                          <button className="cart-btn-2" type="submit">
-                            Apply Coupon
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                             
-                          </ul>
-                                ))}
-                        </div>
+      {cartItems.map((item, index) => (
+        <ul key={index}>
+          <li>
+            <span className="order-middle-left">
+              <img
+                src={`${URL}/images/${item.productDetails.coverImage}`}
+                style={{ width: "60px", marginRight: "10px" }}
+              />
+              {item.productDetails.mainCategory} X {item.sizeDetails.quantity}
+            </span>
+            <span className="order-price">
+              ₹{calculateDiscountedAmount(item).toFixed(2)}
+            </span>
+          </li>
+          
+          {getProductCoupon(item.productDetails.id) && (
+            <div className="coupon-section mt-2">
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
+                <p className="font-medium">Coupon Available!</p>
+                <p className="text-sm">Code: {getProductCoupon(item.productDetails.id).code}</p>
+                <p className="text-xs">Get {getProductCoupon(item.productDetails.id).discount}% off</p>
+              </div>
+              <div className="discount-code-wrapper">
+                <div className="discount-code">
+                  <form onSubmit={(e) => handleApplyCoupon(e, item.productDetails.id)}>
+                    <input 
+                      type="text" 
+                      required 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Enter coupon code"
+                    />
+                    <button className="cart-btn-2" type="submit">
+                      Apply Coupon
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </ul>
+      ))}
+    </div>
+
                         <div className="your-order-bottom">
                           <ul style={{ marginBottom: "10px" }}>
                             <li className="your-order-shipping">
@@ -522,7 +542,7 @@ const Checkout = () => {
                           </ul>
                         </div>
                         <div className="your-order-total">
-                          <ul>
+                          {/* <ul>
                             <li className="order-total">Total</li>
                             <li>
                             ₹
@@ -538,7 +558,13 @@ const Checkout = () => {
                                 )
                               ).toFixed(2)}
                             </li>
-                          </ul>
+                          </ul> */}
+                           <div className="your-order-total">
+      <ul>
+        <li className="order-total">Total</li>
+        <li>₹{calculateTotal()}</li>
+      </ul>
+    </div>
                         </div>
                       </div>
                       <div className="payment-method"></div>

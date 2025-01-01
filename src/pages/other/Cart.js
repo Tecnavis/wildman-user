@@ -33,13 +33,13 @@ const Cart = () => {
       }));
       setCustomerCart(cartWithQuantity);
     }
-    fetchCoupons()
-      .then((res) => {
-        setCoupons(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // fetchCoupons()
+    //   .then((res) => {
+    //     setCoupons(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   }, []);
   // Initialize selectedSizes with first available size for each product
   useEffect(() => {
@@ -225,13 +225,13 @@ const Cart = () => {
   const totalAmount = calculateTotalPrice();
   const totalDiscount = calculateTotalDiscount();
   // Function to get coupon for a specific product
-  const getProductCoupon = (productId) => {
-    return coupons.find(
-      (coupon) =>
-        coupon.status === "active" &&
-        coupon.products.some((product) => product._id === productId)
-    );
-  };
+  // const getProductCoupon = (productId) => {
+  //   return coupons.find(
+  //     (coupon) =>
+  //       coupon.status === "active" &&
+  //       coupon.products.some((product) => product._id === productId)
+  //   );
+  // };
 
   return (
     <Fragment>
@@ -285,7 +285,7 @@ const Cart = () => {
                                     alt=""
                                   />
                                 </Link>
-                                {getProductCoupon(item.productId._id) && (
+                                {/* {getProductCoupon(item.productId._id) && (
                                   <div className="coupon-section mt-2">
                                     <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
                                       <p className="font-medium">
@@ -308,7 +308,7 @@ const Cart = () => {
                                       </p>
                                     </div>
                                   </div>
-                                )}
+                                )} */}
                               </td>
                               <td className="product-name">
                                 <Link to="">
@@ -440,7 +440,7 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="row" hidden={!isOrderConfirmed}>
-                  <div className="col-lg-6 col-md-12">
+                  {/* <div className="col-lg-6 col-md-12">
                     <div className="discount-code-wrapper">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gray">
@@ -457,8 +457,8 @@ const Cart = () => {
                         </form>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-lg-6 col-md-12">
+                  </div> */}
+                  <div className="col-lg-12 col-md-12">
                     <div className="grand-totall">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gary-cart">
