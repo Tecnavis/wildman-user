@@ -468,11 +468,6 @@ const Checkout = () => {
           
           {getProductCoupon(item.productDetails.id) && (
             <div className="coupon-section mt-2">
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded relative text-center">
-                <p className="font-medium">Coupon Available!</p>
-                <p className="text-sm">Code: {getProductCoupon(item.productDetails.id).code}</p>
-                <p className="text-xs">Get {getProductCoupon(item.productDetails.id).discount}% off</p>
-              </div>
               <div className="discount-code-wrapper">
                 <div className="discount-code">
                   <form onSubmit={(e) => handleApplyCoupon(e, item.productDetails.id)}>
