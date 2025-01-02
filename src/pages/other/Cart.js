@@ -3,7 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { fetchCustomerCart,URL,fetchCoupons,deleteCustomerCart,} from "../../helpers/handle_api";
+import {
+  fetchCustomerCart,
+  URL,
+  fetchCoupons,
+  deleteCustomerCart,
+} from "../../helpers/handle_api";
 import Swal from "sweetalert2";
 import "./style.scss";
 const Cart = () => {
@@ -139,6 +144,17 @@ const Cart = () => {
           quantity: item.quantity,
           total: (item.price || item.productId?.price) * item.quantity || 0,
           discount: item.discount || item.productId?.discount,
+        },
+        sizeDetails: {
+          sizeId: item._id,
+          size: selectedSizes[item._id],
+          quantity: item.quantity,
+          totalProductprice:
+            (item.price || item.productId?.price) * item.quantity || 0,
+          discount: item.discount || item.productId?.discount || 0,
+          total:
+            ((item.price || item.productId?.price) * item.quantity || 0) *
+            (1 - (item.discount || item.productId?.discount || 0) / 100),
         },
         totalQuantity,
         totalAmount,
