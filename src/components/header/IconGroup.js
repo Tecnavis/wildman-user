@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import clsx from "clsx";
 import MenuCart from "./sub-components/MenuCart";
 import { fetchWishlist,fetchCustomerCart,fetchProducts } from "../../helpers/handle_api";
@@ -51,7 +51,7 @@ const navigate = useNavigate();
     );
     offcanvasMobileMenu.classList.add("active");
   };
-  const { compareItems } = useSelector((state) => state.compare);
+  // const { compareItems } = useSelector((state) => state.compare);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Rating from "../../components/product/sub-components/ProductRating";
 import ProductModal from "../../components/product/ProductModal";
 import {
   fetchProducts,
