@@ -12,6 +12,7 @@ import {
 } from "../../helpers/handle_api";
 import Swal from "sweetalert2";
 import "./style.scss";
+import ProductRating from "../../components/product/sub-components/ProductRating";
 
 const ProductGridSingle = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -239,7 +240,7 @@ const ProductGridSingle = () => {
 
   return (
     <Fragment>
-      <div className="product-grid-container">
+      {/* <div className="product-grid-container">
         {products.map((data, index) => (
           <div className="product-wrap" key={index}>
             <div className="product-img">
@@ -305,6 +306,88 @@ const ProductGridSingle = () => {
                 <Rating ratingValue={4} />
               </div>
               
+            </div>
+          </div>
+        ))}
+      </div> */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "20px",
+          padding: "20px",
+        }}
+      >
+        {products.map((data, index) => (
+          <div
+            key={index}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              overflow: "hidden",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              textAlign: "center",
+              padding: "10px",
+            }}
+          >
+            <div>
+              <Link
+                to={`/productview/${data._id}`}
+                onClick={() => addToRecentlyViewed(data)}
+              >
+                <img
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                  src={`${URL}/images/${data.coverimage}`}
+                  alt=""
+                />
+              </Link>
+            </div>
+            <h5>
+              <Link to={`/productview/${data._id}`}>{data.mainCategory}</Link>
+            </h5>
+            <p>{data.title}</p>
+            <div className="product-rating">
+              <ProductRating ratingValue={data.rating} />
+            </div>
+            <br />
+            <span style={{ color: "red", paddingRight: "10px" }}>
+              RS. {(data.price * (1 - data.discount / 100)).toFixed(2)}
+            </span>
+            MRP.
+            <span className="old"> {data.price}.00</span>
+            <div>
+              <button
+                style={{
+                  margin: "5px",
+                  padding: "10px",
+                  backgroundColor: "black",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleaddToCart(data)}
+              >
+                Add To Cart
+              </button>
+              <button
+                style={{
+                  margin: "5px",
+                  padding: "10px",
+                  backgroundColor: "while",
+                  color: "black",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleAddToWishlist(data)}
+              >
+                Add To Wishlist
+              </button>
             </div>
           </div>
         ))}

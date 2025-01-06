@@ -1,0 +1,18 @@
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 products per row */
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: repeat(2, 1fr); /* 2 products per row for medium screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .gridContainer {
+    grid-template-columns: repeat(2, 1fr); /* 1 product per row for small screens */
+  }
+}

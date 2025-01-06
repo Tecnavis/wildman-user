@@ -188,11 +188,11 @@ const ShopProducts = ({ products, layout }) => {
                         <Fragment>
                           <span style={{ color: "red", paddingRight: "10px" }}>
                             RS.{" "}
-                            {(item.price * (1 - item.discount / 100)).toFixed(
+                            {(item.price * (1 -item.discount / 100)).toFixed(
                               2
                             )}
-                          </span>
-                          <span className="old">MRP. {item.price}.00</span>
+                          </span><br/>
+                          MRP.<span className="old"> {item.price}.00</span>
                         </Fragment>
                       ) : (
                         <span style={{ color: "red" }}>

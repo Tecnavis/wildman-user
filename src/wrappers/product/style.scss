@@ -48,3 +48,13 @@
     max-width: 50%;
   }
 }
+
+.product-rating {
+  i {
+    color: #343538;
+    margin-right: 5px;
+
+    &.yellow {
+      color: #ffa900;
+    }
+  }}

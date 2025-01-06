@@ -18,14 +18,14 @@ const BlogFeatured = ({ spaceTopClass, spaceBottomClass }) => {
     <div className={clsx("blog-area", spaceTopClass, spaceBottomClass)}>
       <div className="container">
         <SectionTitle
-          titleText="RECENTLY VIEWED PRODUCTS"
+          titleText="RECENT PRODUCTS"
           positionClass="text-center"
-          spaceClass="mb-55"
+          spaceClass="mb-35"
         />
         <div className="row">
           {recentlyViewed.length > 0 ? (
             recentlyViewed.map((product, index) => (
-              <div key={index} className="col-lg-4 col-sm-6 mb-30">
+              <div key={index} className="col-lg-4 col-sm-6 ">
                 <div className="blog-wrap scroll-zoom">
                   <div className="blog-img">
                     <Link to={`/productview/${product._id}`}>
