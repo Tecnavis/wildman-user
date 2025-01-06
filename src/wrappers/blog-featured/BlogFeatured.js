@@ -31,9 +31,14 @@ const BlogFeatured = ({ spaceTopClass, spaceBottomClass }) => {
                     <Link to={`/productview/${product._id}`}>
                       <img src={`${URL}/images/${product.coverimage}`} alt={product.name} />
                     </Link>
-                    <div className="blog-category-names">
-                      <span className="purple">{product.mainCategory}</span>
-                    </div>
+                    {product.tag && product.tag !== "undefined" ? (
+  <div className="blog-category-names">
+    <span className="purple">{product.tag}</span>
+  </div>
+) : null}
+
+
+
                   </div>
                   <div className="blog-content-wrap">
                     <div className="blog-content text-center">

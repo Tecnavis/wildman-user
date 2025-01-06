@@ -457,7 +457,11 @@ const [coupons, setCoupons] = useState([]);
                     {product.discount && (
                       <span className="pink">-{product.discount}%</span>
                     )}
-                    <span className="purple">New</span>
+                     {product.tag && product.tag !== "undefined" ? (
+  <div className="blog-category-names">
+    <span className="purple">{product.tag}</span>
+  </div>
+) : null}
                   </div>
                   <Swiper>
                     <SwiperSlide>
