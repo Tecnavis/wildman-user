@@ -719,49 +719,52 @@ const [coupons, setCoupons] = useState([]);
           </div>
         </div>
         <Swiper>
-          {product.videoLink &&
-            product.videoLink.map((video, index) => {
-              // Check if the link is a YouTube URL
-              const isYouTube = video.includes("youtu");
-              return (
-                <SwiperSlide key={index}>
-                  <div className="single-video">
-                    {isYouTube ? (
-                      <iframe
-                        src={`https://www.youtube.com/embed/${
-                          video.split("v=")[1] ||
-                          video.split("/").pop().split("?")[0]
-                        }?autoplay=1&loop=1&rel=0&playlist=${
-                          video.split("v=")[1] ||
-                          video.split("/").pop().split("?")[0]
-                        }`}
-                        title={`Video ${index}`}
-                        className="img-fluid"
-                        frameBorder="0"
-                        allow="autoplay; encrypted-media"
-                        allowFullScreen
-                        style={{ width: "100%", height: "300px" }}
-                      />
-                    ) : (
-                      <video
-                        src={video}
-                        className="img-fluid"
-                        controls
-                        preload="metadata"
-                        autoPlay
-                        muted
-                        loop
-                        style={{ width: "100%", height: "auto" }}
-                      >
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </div>
-                  {/* Removed other components */}
-                </SwiperSlide>
-              );
-            })}
-        </Swiper>
+  {product.videoLink && product.videoLink.length > 0 && product.videoLink[0] !== "" ? (
+    product.videoLink.map((video, index) => {
+      // Check if the link is a YouTube URL
+      const isYouTube = video.includes("youtu");
+      return (
+        <SwiperSlide key={index}>
+          <div className="single-video">
+            {isYouTube ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${
+                  video.split("v=")[1] ||
+                  video.split("/").pop().split("?")[0]
+                }?autoplay=1&loop=1&rel=0&playlist=${
+                  video.split("v=")[1] ||
+                  video.split("/").pop().split("?")[0]
+                }`}
+                title={`Video ${index}`}
+                className="img-fluid"
+                frameBorder="0"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                style={{ width: "100%", height: "300px" }}
+              />
+            ) : (
+              <video
+                src={video}
+                className="img-fluid"
+                controls
+                preload="metadata"
+                autoPlay
+                muted
+                loop
+                style={{ width: "100%", height: "auto" }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </SwiperSlide>
+      );
+    })
+  ) : (
+    <div></div>
+  )}
+</Swiper>
+
         <br />
         <div className={clsx("description-review-area")}>
           <div className="container">
