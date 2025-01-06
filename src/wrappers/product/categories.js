@@ -24,7 +24,7 @@ const Categories = () => {
           <div className="col-6 col-sm-6 col-md-6 col-lg-3" key={item.id}>
             <div className="product-wrap">
               <div className="product-img">
-                <Link to={`/`}>
+                <Link to={`/category/${item.name}`}>
                   <img
                     className="default-img"
                     src={`${URL}/images/${item.image}`}

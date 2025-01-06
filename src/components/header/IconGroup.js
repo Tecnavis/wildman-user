@@ -5,7 +5,7 @@ import clsx from "clsx";
 import MenuCart from "./sub-components/MenuCart";
 import { fetchWishlist,fetchCustomerCart,fetchProducts } from "../../helpers/handle_api";
 import { useEffect, useState } from "react";
-
+import "./style.scss"
 const IconGroup = ({ iconWhiteClass }) => {
 
 
@@ -61,6 +61,7 @@ const navigate = useNavigate();
     navigate("/shop-grid-no-sidebar", { state: { filteredProducts } });
   };
   return (
+    <>
     <div className={clsx("header-right-wrap", iconWhiteClass)} >
      <div className="same-style header-search d-none d-lg-block">
         <button className="search-active" onClick={e => handleClick(e)}>
@@ -105,14 +106,14 @@ const navigate = useNavigate();
           </ul>
         </div>
       </div>
-      <div className="same-style header-compare">
+      {/* <div className="same-style header-compare">
         <Link to={process.env.PUBLIC_URL + "/compare"}>
           <i className="pe-7s-shuffle" />
           <span className="count-style">
             {compareItems && compareItems.length ? compareItems.length : 0}
           </span>
         </Link>
-      </div>
+      </div> */}
       <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
@@ -147,7 +148,28 @@ const navigate = useNavigate();
           <i className="pe-7s-menu" />
         </button>
       </div>
+      <br/>  
+      
     </div>
+    {/* //moble view search bar */}
+    <div className="same-style mobile-off-canvas d-block d-lg-none">
+    <div className="search-bar-container">
+          <form className="search-bar-form" onSubmit={handleSearch}>
+            <input
+            style={{height:"45px"}}
+              type="text"
+              className="search-input"
+              placeholder="Search ..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="search-button">
+              <i className="pe-7s-search" />
+            </button>
+          </form>
+        </div>
+</div>
+    </>
   );
 };
 
