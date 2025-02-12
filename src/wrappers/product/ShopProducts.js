@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ProductModal from "../../components/product/ProductModal";
 import { Link } from "react-router-dom";
 import {
@@ -14,6 +14,66 @@ import "./style.scss";
 
 const ShopProducts = ({ products, layout }) => {
   const [modalShow, setModalShow] = useState(false);
+  const [couponData, setCouponData] = useState({});
+
+  const [countdownTimers, setCountdownTimers] = useState({});
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await Promise.all(
+          products.map(async (product) => {
+            const res = await fetch(`${URL}/coupon/product/${product._id}`);
+            const data = await res.json();
+            return { productId: product._id, coupons: data };
+          })
+        );
+
+        const couponMap = response.reduce((acc, item) => {
+          acc[item.productId] = item.coupons;
+          return acc;
+        }, {});
+
+        setCouponData(couponMap);
+      } catch (error) {
+        console.error("Error fetching coupon data:", error);
+      }
+    };
+
+    fetchCoupons();
+  }, [products]);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const timers = {};
+
+      Object.keys(couponData).forEach((productId) => {
+        if (couponData[productId]?.length > 0) {
+          const expirationDate = new Date(couponData[productId][0].expirationDate).getTime();
+          const now = new Date().getTime();
+          const timeDiff = expirationDate - now;
+
+          if (timeDiff > 0) {
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            timers[productId] = `${hours}h ${minutes}m ${seconds}s`;
+          } else {
+            timers[productId] = "Expired";
+          }
+        }
+      });
+
+      setCountdownTimers(timers);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [couponData]);
+
 
   const handleAddToWishlist = async (product) => {
     const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
@@ -143,6 +203,26 @@ const ShopProducts = ({ products, layout }) => {
             <div className={`col-xl-3 col-lg-4 col-sm-6 col-xs-4`} key={index}>
             <Fragment>
                 <div className="product-wrap">
+              
+                <div
+                    className="coupon-info"
+                    style={{
+                      padding: "8px",
+                      marginBottom: "10px",
+                      borderRadius: "4px",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {couponData[item._id] && couponData[item._id].length > 0 ? (
+                      <>
+                        <strong>Deal expires in:</strong> {countdownTimers[item._id] || "Calculating..."}
+                      </>
+                    ) : (
+                     <></>
+                    )}
+                  </div>
+
+
                   <div className="product-img">
                     <Link to={`/productview/${item._id}`}>
                       <img
