@@ -9,8 +9,8 @@ export const fetchCoupons = async () => {
   return response.data;
 }
 
-export const  URL = `http://localhost:3000`;
-// export const  URL = `https://api.wildmanpremium.com`;
+// export const  URL = `http://localhost:3000`;
+export const  URL = `https://api.wildmanpremium.com`;
 //fetch about
 export const fetchAbout = async () => {
   const response = await axios.get(`${URL}/about`);

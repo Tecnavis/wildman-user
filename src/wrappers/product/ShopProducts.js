@@ -15,8 +15,7 @@ import "./style.scss";
 const ShopProducts = ({ products, layout }) => {
   const [modalShow, setModalShow] = useState(false);
   const [couponData, setCouponData] = useState({});
-
-  const [countdownTimers, setCountdownTimers] = useState({});
+  const [countdowns, setCountdowns] = useState({});
 
   useEffect(() => {
     const fetchCoupons = async () => {
@@ -44,32 +43,43 @@ const ShopProducts = ({ products, layout }) => {
   }, [products]);
 
   useEffect(() => {
-    const updateCountdown = () => {
-      const timers = {};
+    const updateCountdowns = () => {
+      const newCountdowns = {};
 
       Object.keys(couponData).forEach((productId) => {
-        if (couponData[productId]?.length > 0) {
-          const expirationDate = new Date(couponData[productId][0].expirationDate).getTime();
+        const coupons = couponData[productId];
+
+        if (coupons && coupons.length > 0) {
           const now = new Date().getTime();
-          const timeDiff = expirationDate - now;
 
-          if (timeDiff > 0) {
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          // Filter non-expired coupons and find the nearest expiration
+          const validCoupons = coupons
+            .map((coupon) => ({
+              expirationDate: new Date(coupon.expirationDate).getTime(),
+            }))
+            .filter((coupon) => coupon.expirationDate > now)
+            .sort((a, b) => a.expirationDate - b.expirationDate); // Sort by nearest expiration
 
-            timers[productId] = `${hours}h ${minutes}m ${seconds}s`;
+          if (validCoupons.length > 0) {
+            const nearestExpiration = validCoupons[0].expirationDate;
+            const timeLeft = nearestExpiration - now;
+
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            newCountdowns[productId] = `${hours} hr ${minutes} min ${seconds} sec`;
           } else {
-            timers[productId] = "Expired";
+            newCountdowns[productId] = null; // No valid coupons left
           }
         }
       });
 
-      setCountdownTimers(timers);
+      setCountdowns(newCountdowns);
     };
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+    const interval = setInterval(updateCountdowns, 1000);
+    updateCountdowns(); // Run immediately
 
     return () => clearInterval(interval);
   }, [couponData]);
@@ -203,25 +213,20 @@ const ShopProducts = ({ products, layout }) => {
             <div className={`col-xl-3 col-lg-4 col-sm-6 col-xs-4`} key={index}>
             <Fragment>
                 <div className="product-wrap">
-              
-                <div
-                    className="coupon-info"
-                    style={{
-                      padding: "8px",
-                      marginBottom: "10px",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {couponData[item._id] && couponData[item._id].length > 0 ? (
-                      <>
-                        <strong>Deal expires in:</strong> {countdownTimers[item._id] || "Calculating..."}
-                      </>
-                    ) : (
-                     <></>
-                    )}
-                  </div>
-
+                {countdowns[item._id] && (
+  <div className="coupon-info" style={{
+    backgroundColor: "#f8f9fa",
+    padding: "8px",
+    marginBottom: "10px",
+    borderRadius: "4px",
+    fontSize: "12px"
+  }}>
+    Deal expires in: 
+    <span style={{ color: "red", fontWeight: "bold", marginLeft: "5px" }}>
+      {countdowns[item._id]}
+    </span>
+  </div>
+)}
 
                   <div className="product-img">
                     <Link to={`/productview/${item._id}`}>
