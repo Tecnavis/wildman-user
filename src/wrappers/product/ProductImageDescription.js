@@ -189,64 +189,7 @@ const [coupons, setCoupons] = useState([]);
   };
   const incrementQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
-  };
-  // Modify the existing add to cart function to include quantity
-  // const handleAddToCart = async (product) => {
-  //   const customerDetails = JSON.parse(localStorage.getItem("customerDetails"));
-  //   if (!customerDetails) {
-  //     let guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-  //     const existingProductIndex = guestCart.findIndex(
-  //       (item) => item._id === product._id
-  //     );
-  //     if (existingProductIndex > -1) {
-  //       // If product already exists, update its quantity
-  //       guestCart[existingProductIndex].quantity =
-  //         (guestCart[existingProductIndex].quantity || 0) + quantity;
-  //     } else {
-  //       // If product is new, add it with the selected quantity
-  //       guestCart.push({
-  //         ...product,
-  //         quantity: quantity,
-  //       });
-  //     }
-  //     localStorage.setItem("guestCart", JSON.stringify(guestCart));
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Added to Cart",
-  //       text: `${quantity} item(s) added to your cart.`,
-  //     });
-  //     return;
-  //   }
-  //   try {
-  //     const wishlistResponse = await fetchCustomerCart();
-  //     const existingWishlist = wishlistResponse || [];
-  //     const isProductInWishlist = existingWishlist.some(
-  //       (item) => item.productId._id === product._id
-  //     );
-  //     if (isProductInWishlist) {
-  //       Swal.fire({
-  //         icon: "info",
-  //         title: "Already in Cart",
-  //         text: "This product is already in your cart.",
-  //       });
-  //       return;
-  //     }
-  //     const cartData = {
-  //       productId: product._id,
-  //       customerId: customerDetails._id,
-  //       quantity: quantity, // Include quantity in cart data
-  //     };
-  //     await createCustomerCart(cartData);
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Added to Cart",
-  //       text: `${quantity} item(s) added to your cart.`,
-  //     });
-  //   } catch (error) {
-  //     console.log("Error adding to cart", error);
-  //   }
-  // };
-  const handleAddToCart = async (product) => {
+  };  const handleAddToCart = async (product) => {
     if (!selectedSize) {
       Swal.fire({
         icon: "error",
@@ -572,16 +515,6 @@ const [coupons, setCoupons] = useState([]);
                     <div className="pro-details-color-wrap">
                       <a className="des"> Size :</a>
                     </div>
-                    {/* {product.sizes.map((size) => (
-                      <div className="pro-details-size" key={size._id}>
-                        <div className="pro-details-size-content">
-                          <label className={`pro-details-size-content--single`}>
-                            <input type="radio" value={"M"} />
-                            <span className="size-name"> {size.size}</span>
-                          </label>
-                        </div>
-                      </div>
-                    ))} */}
                     {product.sizes.map((size) => (
   <div className="pro-details-size" key={size._id}>
     <div className="pro-details-size-content">

@@ -60,6 +60,7 @@ const navigate = useNavigate();
     );
     navigate("/shop-grid-no-sidebar", { state: { filteredProducts } });
   };
+  const customer = JSON.parse(localStorage.getItem("customerDetails"));
   return (
     <>
     <div className={clsx("header-right-wrap", iconWhiteClass)} >
@@ -89,31 +90,25 @@ const navigate = useNavigate();
           <i className="pe-7s-user-female" />
         </button>
         <div className="account-dropdown">
-          <ul>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>Login</Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                Register
-              </Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                my account
-              </Link>
-            </li>
-          </ul>
+        <ul>
+              {customer ? (
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/my-account"}>My Account</Link>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <Link to={process.env.PUBLIC_URL + "/login-register"}>Login</Link>
+                  </li>
+                  <li>
+                    <Link to={process.env.PUBLIC_URL + "/login-register"}>Register</Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          
         </div>
       </div>
-      {/* <div className="same-style header-compare">
-        <Link to={process.env.PUBLIC_URL + "/compare"}>
-          <i className="pe-7s-shuffle" />
-          <span className="count-style">
-            {compareItems && compareItems.length ? compareItems.length : 0}
-          </span>
-        </Link>
-      </div> */}
       <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
